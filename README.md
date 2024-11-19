@@ -80,4 +80,4 @@ User Label: BTN
 		HAL_GPIO_TogglePin(LED_GPIO_Port, LED_Pin);  // LED 모드 변경
 	}
 }
-6. 디버깅 
+6. 디버깅  디버깅 할때 초록색 벌레표시를 꼭 눌른 다음 오른쪽 초록색 화살표를 눌러야함 
