@@ -1,0 +1,45 @@
+# 빌드 아티팩트
+/build/
+*.o
+*.exe
+*.out
+*.bin
+*.hex
+
+# IDE 관련 파일
+*.swp
+*.swo
+*.user
+*.project
+*.cproject
+*.settings/
+*.launch
+*.ide
+
+# 로그 파일
+*.log
+
+# 임시 파일
+*.tmp
+*.bak
+*.orig
+
+# 테스트 결과
+/test_results/
+*.gcda
+*.gcno
+
+# 문서화 관련
+*.doxygen
+
+# OS 생성 파일
+.DS_Store
+Thumbs.db
+*.class
+*.pyc
+*.pyo
+
+# 기타
+*.sublime-workspace
+*.sublime-project
+*.vscode/
