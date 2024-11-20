@@ -5,7 +5,9 @@
 *.out
 *.bin
 *.hex
-
+# 폴더 무시 
+Debug/
+git rm --cached Debug/ -r
 # IDE 관련 파일
 *.swp
 *.swo
