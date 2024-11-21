@@ -14,7 +14,7 @@ usb 메뉴에 Device(FS) 체크 / PA12 , PA11 에 USB 핀이 설정된다.
 
 cubemx에서 Middleware > USB_DEVICE 메뉴에서 class For FS IP를 communication Device Class(Virtual Port Com)을 선택
 
-PA1핀도 Output으로 설정 후 GENERATE CODE
+PA1핀 Output으로 설정 후 GENERATE CODE
 
 주요 기능
 USB CDC 초기화: USB 장치 초기화
