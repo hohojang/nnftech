@@ -26,7 +26,11 @@ USB CDC 초기화: USB 장치 초기화
 함수 공부 
 
 HAL_Init(): HAL 라이브러리를 초기화
+
 SystemClock_Config(): 시스템 클록을 설정
+
 MX_GPIO_Init(): GPIO를 초기화
+
 MX_USB_DEVICE_Init(): USB 장치를 초기화
+
 CDC_Transmit_FS(): USB를 통해 문자열을 전송
