@@ -3,6 +3,7 @@
 STM32 펌웨어 기초 06 Reset Count 
 
 STM32 NUCLEO-L452RE 보드의 Reset 버튼을 이용해 버튼을 누를 시 
+
 터미널에서 count 문자가 출력되도록 하는 프로젝트 
 
 @문제 : 유튜브[https://www.youtube.com/watch?v=Pj3Iel6zrHA&list=PLvFHFPM09alKygQq-L6_6DwuNqTybIAw0&index=7] 강의를 진행 
