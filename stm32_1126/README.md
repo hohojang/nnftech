@@ -60,9 +60,9 @@ EXTI15_10_IRQn: NVIC가 관리하는 외부 인터럽트 라인 10~15 그룹을 
 // GPIO 인터럽트 콜백 함수
 void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
 {
-    if (GPIO_Pin == GPIO_PIN_13) // 파란색 버튼 (PC13)이 눌리면! 
+    if (GPIO_Pin == GPIO_PIN_13)                 // 파란색 버튼 (PC13)이 눌리면! 
     {
-        reset_count++; // 카운트 증가
+        reset_count++;                          // 카운트 증가
 
         // USART를 통해 카운트 출력
         char msg[50];
