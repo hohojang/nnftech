@@ -1,14 +1,17 @@
 ####################### STM32 펌웨어 기초 6-2 RESET COUNT #########################
 
 
-                           24-11-26 
+24-11-26 
 
 
 어제 발생한 문제 : 나의 보드 CPU는 RESET 버튼을 일반 버튼으로 바꾸는것이 불가능한가? 
 
+
 결론 : 불가능 
 
+
 변경 : RESET 버튼 대신 보드 내장 버튼을 사용 
+
 
 순서
 
@@ -84,6 +87,7 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
         HAL_UART_Transmit(&huart2, (uint8_t *)msg, strlen(msg), HAL_MAX_DELAY);
     }
 }
+
 
         
 
