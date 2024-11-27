@@ -106,7 +106,7 @@ int main(void)
 
 void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
 {
-    if(GPIO_Pin == B1_Pin)  // BTN_Pin을 B1_Pin으로 변경
+    if(GPIO_Pin == B1_Pin)  // 버튼을 누르면 led가 켜지고 꺼지도록 
     {
         HAL_GPIO_TogglePin(LED_GPIO_Port, LED_Pin);  // LED 토글
     }
