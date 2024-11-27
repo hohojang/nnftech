@@ -137,7 +137,7 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
 // 오류 처리 함수
 void Error_Handler(void)
 {
-    __disable_irq();
+    __disable_irq(); // 글로벌 인터럽트를 비활성화 
     while (1)
     {
         // 무한 루프
