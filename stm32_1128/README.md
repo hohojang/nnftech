@@ -1,45 +1,72 @@
-프로젝트 이름: STM32 펌웨어 기초 09-UART#3[DMA]
+############################STM32 펌웨어 기초 09-UART#3[DMA]#########################
+
 프로젝트 개요
-이 프로젝트는 STM32 마이크로컨트롤러에서 UART 통신을 사용하여 데이터를 송수신하는 예제 코드입니다. 송신과 수신은 DMA(Direct Memory Access)를 활용하여 비차단적으로 처리됩니다. 송신 데이터는 "안녕 안녕~~!"이며, 수신된 데이터는 64바이트 버퍼에 저장되고, 수신 완료 후 송신됩니다.
+
+이 프로젝트는 STM32 마이크로컨트롤러에서 UART 통신을 사용하여 데이터를 송수신하는 예제 프로젝트입니다.
+
+송신과 수신은 DMA(Direct Memory Access)를 활용하여 비차단적으로 처리됩니다. 송신 데이터는 문자열로 출력되며, 수신된 데이터는 64바이트 버퍼에 저장되고, 수신 완료 후 송신됩니다.
 
 주요 기능
-UART 송신: "안녕 안녕~~!" 문자열을 DMA로 UART 송신.
+
+UART 송신: 문자열을 DMA로 UART 송신.
+
 UART 수신: UART로부터 데이터를 비차단적으로 수신하고, 수신 완료 후 해당 데이터를 다시 송신.
+
 DMA 사용: UART 송수신을 DMA로 처리하여 CPU 부하를 줄이고 효율적인 데이터 전송.
+
+
+
 사용된 주요 함수
-HAL_Init(): HAL 라이브러리 초기화.
-SystemClock_Config(): 시스템 클럭 설정 (HSI 오실레이터 및 PLL 사용).
-MX_GPIO_Init(): GPIO 초기화 (B1 핀 입력, LD4 핀 출력).
-MX_DMA_Init(): DMA 초기화 (USART2 송수신 DMA 설정).
-MX_USART2_UART_Init(): USART2 UART 초기화 (9600 보드레이트, 8비트 데이터, 1스톱 비트).
-HAL_UART_RxCpltCallback(): UART 수신 완료 콜백 함수 (수신된 데이터를 다시 송신).
-Error_Handler(): 오류 발생 시 호출, 무한 루프에 빠짐.
+
+        HAL_Init(): HAL 라이브러리 초기화.
+        SystemClock_Config(): 시스템 클럭 설정 (HSI 오실레이터 및 PLL 사용).
+        MX_GPIO_Init(): GPIO 초기화 (B1 핀 입력, LD4 핀 출력).
+        MX_DMA_Init(): DMA 초기화 (USART2 송수신 DMA 설정).
+        MX_USART2_UART_Init(): USART2 UART 초기화 (9600 보드레이트, 8비트 데이터, 1스톱 비트).
+        HAL_UART_RxCpltCallback(): UART 수신 완료 콜백 함수 (수신된 데이터를 다시 송신).
+        Error_Handler(): 오류 발생 시 호출, 무한 루프에 빠짐.
+        
 코드 흐름
 초기화:
 
 시스템 및 주변 장치 초기화
+
 (HAL_Init(), SystemClock_Config(), MX_GPIO_Init(), MX_DMA_Init(), MX_USART2_UART_Init()).
 송신:
 
-HAL_UART_Transmit_DMA()를 통해 "안녕 안녕~~!" 문자열을 UART로 송신.
+HAL_UART_Transmit_DMA()를 통해 문자열을 UART로 송신.
 수신:
 
 HAL_UART_Receive_DMA()를 통해 UART로부터 데이터를 비차단적으로 수신 시작.
 수신 처리:
 
 수신 완료 후 HAL_UART_RxCpltCallback() 콜백 함수가 호출되며, 수신된 데이터를 다시 송신.
-주요 사용 이유
+
+
+
+
 DMA 사용:
+
 UART 송수신을 DMA로 처리하여 CPU 부하를 줄이고 데이터 처리 성능 향상.
+
+
 콜백 함수:
 수신 완료 후 자동으로 처리하도록 콜백 함수를 사용하여 실시간 데이터 처리.
+
+
 동작 흐름
-초기화: 시스템이 초기화되고, 송신 데이터("안녕 안녕~~!")가 UART로 송신됩니다.
+
+초기화: 시스템이 초기화되고, 송신 데이터(문자열)가 UART로 송신됩니다.
+
 수신 대기: UART에서 DMA를 통해 수신이 시작됩니다.
+
 수신 처리: 수신이 완료되면 HAL_UART_RxCpltCallback() 함수가 호출되어 데이터를 다시 송신.
+
+
 하드웨어 요구사항
+
+
 STM32 마이크로컨트롤러: STM32 MCU에서 실행됩니다.
+
 UART 연결: UART2 포트를 사용하여 외부 장치와 통신합니다.
-참고 사항
-코드에서 사용하는 DMA 및 UART 설정은 STM32의 하드웨어와 구성에 맞게 조정해야 할 수 있습니다.
-이 예제는 송신 후 수신을 즉시 처리하는 간단한 예제이며, 복잡한 통신 프로토콜이나 처리가 필요할 수 있습니다.
+
