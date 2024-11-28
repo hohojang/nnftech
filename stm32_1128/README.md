@@ -3,7 +3,7 @@
 
 ## Vimeo Video
 
-[실행동영상](https://img.youtube.com/vi/1034121444/0.jpg)](https://vimeo.com/1034121444)
+[](https://img.youtube.com/vi/1034121444/0.jpg)](https://vimeo.com/1034121444)
 
 ##프로젝트 개요
 
