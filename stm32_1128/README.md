@@ -7,7 +7,7 @@
 
 ##프로젝트 개요
 
-이 프로젝트는 STM32 마이크로컨트롤러에서 UART 통신을 사용하여 데이터를 송수신하는 예제 프로젝트이다.
+DMA(Direct Memory Access)를 이용한 UART 송수신
 
 송신과 수신은 DMA(Direct Memory Access)를 활용하여 비차단적으로 처리 
 
@@ -53,7 +53,7 @@ HAL_UART_Receive_DMA()를 통해 UART로부터 데이터를 비차단적으로 �
 
 
 
-DMA 사용:
+DMA를 사용함에 있어서 좋은점:
 
 UART 송수신을 DMA로 처리하여 CPU 부하를 줄이고 데이터 처리 성능 향상.
 
