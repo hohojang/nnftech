@@ -2,8 +2,7 @@
 
 이 프로젝트는 STM32 마이크로컨트롤러를 사용하여 USB to Serial 기능과 USB 통신 개선을 구현 
 
-이 프로젝트는 USB CDC (Communication Device Class)와 UART (Universal Asynchronous Receiver Transmitter)를 사용하여
-USB 장치와 UART 간의 데이터 송수신을 처리
+이 프로젝트는 USB CDC (Communication Device Class)와 UART (Universal Asynchronous Receiver Transmitter)를 사용하여 USB 장치와 UART 간의 데이터 송수신을 처리
 
 프로젝트 구성
 
