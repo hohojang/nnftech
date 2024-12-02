@@ -66,3 +66,17 @@ USB CDC를 통해 PC와 STM32 보드 간 시리얼 통신
 
 터미널 프로그램을 사용하여 UART 포트를 설정하고 통신을 시작
 
+7. 주요 함수 정리
+
+- `main()`: 프로그램의 진입점으로, 초기화 및 메인 루프를 처리
+  
+- `HAL_UART_RxCpltCallback()`: UART 수신 인터럽트가 발생할 때 호출 / 수신된 데이터를 USB 및 다른 UART로 전송
+  
+- `USB_Data_Receive()`: USB를 통해 수신된 데이터를 처리
+  
+- `MX_USB_DEVICE_Init()`: USB 장치를 초기화
+  
+- `MX_USART2_UART_Init()` 및 `MX_USART3_UART_Init()`: 각각의 UART를 초기화
+  
+- `MX_GPIO_Init()`: GPIO 핀을 초기화
+
