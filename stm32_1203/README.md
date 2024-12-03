@@ -2,6 +2,8 @@
 
 STM32L4 마이크로컨트롤러에서 내장 FLASH 메모리를 지우고, 쓰고, 읽는 기능을 구현
 
+https://www.youtube.com/watch?v=jEAyh8Q_JFg
+
 이 코드는 USART를 통해 결과를 출력, 주기적으로 FLASH 메모리 작업을 수행한다.
 
 기능
