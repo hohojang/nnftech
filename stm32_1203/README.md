@@ -6,7 +6,7 @@ https://www.youtube.com/watch?v=jEAyh8Q_JFg [강의 url]
 
 이 코드는 USART를 통해 결과를 출력, 주기적으로 FLASH 메모리 작업을 수행
 
-기능
+[기능]
 
 FLASH 메모리 지우기
 
@@ -16,12 +16,15 @@ FLASH 메모리에서 데이터 읽기
 
 USART를 통한 결과 출력
 
-하드웨어 요구 사항
+
+[하드웨어 요구 사항]
 
 STM32 NUCLEO-L452RE 보드
 
 USB to UART 변환기 (USART 출력 확인을 위한)
 
+
+[메인 코드 위치 및 주요 함수]
 
 main.c: FLASH 메모리 작업을 수행하는 주요 코드
 
@@ -35,7 +38,7 @@ MX_GPIO_Init(): GPIO 초기화 함수
 
 Error_Handler(): 오류 발생 시 호출되는 함수
 
-현재 문제 상황
+[현재 문제 상황]
 
 현재 코드에서 발생하는 문제
 
