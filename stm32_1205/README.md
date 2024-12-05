@@ -1,5 +1,7 @@
 # STM32 펌웨어 기초 14 | 15 -(USB DFU #1 , #2) Flash와 USART 통신을 통해 DFU 부트로더 진입 
 
+https://www.youtube.com/watch?v=VyOfs1brhOE&list=PLvFHFPM09alKygQq-L6_6DwuNqTybIAw0&index=15
+
 STM32L4 시리즈 MCU를 사용하여 플래시 메모리의 지우기, 쓰기, 읽기 작업을 수행하고,
 
 USART2 및 USART3을 통해 데이터를 전송하며, 특정 조건에서 USB DFU 부트로더로 진입하는 기능을 구현
