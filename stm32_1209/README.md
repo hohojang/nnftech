@@ -1,4 +1,4 @@
-# STM32 펌웨어 기초 18 | 19 -(FreeRTOS, FreeRTOS 제거)
+# STM32 펌웨어 기초 18-(FreeRTOS)
 
 ## 개요
 이 프로젝트는 STM32에서 FreeRTOS를 사용하여 CLI(Command Line Interface)를 구현하는 예제입니다. CLI는 사용자가 UART 인터페이스를 통해 명령어를 입력하고 처리할 수 있도록 합니다. 이 예제에서는 `USART2`와 `USART3`를 사용하여 데이터 송수신을 처리하며, FreeRTOS를 활용해 여러 작업을 동시에 실행합니다. 또한, 명령어 처리 후 CLI 프롬프트가 반복적으로 출력됩니다.
