@@ -4,6 +4,7 @@
 이 프로젝트는 STM32에서 FreeRTOS를 사용하여 CLI(Command Line Interface)를 구현하는 예제
 CLI는 사용자가 UART 인터페이스를 통해 명령어를 입력하고 처리할 수 있도록 함 
 이 예제에서는 `USART2`와 `USART3`를 사용하여 데이터 송수신을 처리하며, FreeRTOS를 활용해 여러 작업을 동시에 실행
+그리고 FreeRTOS를 제거하면 바뀌는 내용들에 대해 설명 
 
 
 ## 사용된 하드웨어
