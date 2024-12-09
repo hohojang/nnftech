@@ -2,7 +2,9 @@
 
 ## 강의 및 결과 영상 URL 
 강의 : [https://www.youtube.com/watch?v=BHQUiLKhlmo]
+
 결과 : [https://vimeo.com/1037375172?share=copy#t=0]
+
 ## 개요
 이 프로젝트는 STM32에서 FreeRTOS를 사용하여 CLI(Command Line Interface)를 구현하는 예제
 
