@@ -28,6 +28,13 @@ FreeRTOS를 제거하면 바뀌는 내용들에 관하여
 1. STM32CubeMX를 사용하여 `USART2`와 `USART3`를 설정
 2. FreeRTOS를 활성화하고, CLI 및 LED 토글을 위한 두 개의 태스크를 설정
 3. `USART2`와 `USART3`는 각각 다른 UART 포트를 사용하여 데이터를 송수신
+   
+### FreeRTOS 제거 
+FreeRTOS가 제거되면, 프로젝트는 멀티태스킹을 사용하지 않고 단일 루프에서 모든 작업을 순차적으로 처리
+
+이에 따라 타이밍 제어나 리소스 공유, 메모리 관리가 더 간단해지지만, 멀티태스킹의 이점(병렬 처리, 태스크 간 통신 등)을 사용 X
+
+대신, 각 작업을 순차적으로 처리하며, 인터럽트 및 타이밍은 HAL 라이브러리 함수들로 대체
 
 ## 코드 설명
 
@@ -66,4 +73,5 @@ void ProcessCLICommand(char *command)
         UART_SendString(&huart2, "Unknown command\r\n");
     }
 }
+
 
