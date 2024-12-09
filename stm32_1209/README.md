@@ -49,6 +49,10 @@ FreeRTOS가 제거되면, 프로젝트는 멀티태스킹을 사용하지 않고
 ## 코드 설명
 
 ### 주요 함수
+- **osKernelInitialize()**: FreeRTOS 커널 초기화
+- **osThreadNew()**: 새로운 태스크 생성
+- **osKernelStart()**: 커널 시작
+- **osDelay()**: 태스크 지연 (주기적인 동작을 위해 사용)
 - **UART_SendString**: 문자열을 `USART2` 또는 `USART3`를 통해 송신
 - **HAL_UART_RxCpltCallback**: `USART2`로부터 데이터를 수신할 때마다 호출 / 수신된 데이터는 `rx_buffer`에 저장
 - **ProcessCLICommand**: 수신된 명령어를 처리 / 명령어에 따라 적절한 응답을 출력
