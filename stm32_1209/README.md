@@ -71,7 +71,7 @@ void ProcessCLICommand(char *command)
     }
     else if (strcasecmp(command, "hello") == 0)
     {
-        UART_SendString(&huart2, "Hello, welcome to the STM32 CLI!\r\n");
+        UART_SendString(&huart2, "Hello, MY NAME IS JANGHO PARK!\r\n");
     }
     else
     {
