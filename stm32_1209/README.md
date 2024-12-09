@@ -7,9 +7,9 @@ CLI는 사용자가 UART 인터페이스를 통해 명령어를 입력하고 처
 
 이 예제에서는 `USART2`와 `USART3`를 사용하여 데이터 송수신을 처리하며, FreeRTOS를 활용해 여러 작업을 동시에 실행
 
-FreeRTOS를 제거하면 바뀌는 내용들에 관하여 
+FreeRTOS의 장단점과 FreeRTOS를 제거하면 바뀌는 내용들에 관하여
 
-
+## FreeRTOS 장단점 
 
 ## 사용된 하드웨어
 - STM32L452RE(Nucleo-64 보드)
