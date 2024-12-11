@@ -4,16 +4,16 @@
 
 학습한 강의 내용 정리 / 용어 정리 
 
-섹션 7: Functions
+## 섹션 7: Functions
 
-51. Typecasting in 'C'
+### 51. Typecasting in 'C'
 
-Typecasting: 데이터의 타입을 명시적으로 변환하는 과정.
+### Typecasting: 데이터의 타입을 명시적으로 변환하는 과정.
 
-예시:
+### 예시:
 
-float x = 3.14;
-int y = (int)x;  // x를 int 타입으로 변환
+### float x = 3.14;
+### int y = (int)x;  // x를 int 타입으로 변환
 
 52. Typecasting in 'C' (contd)
 
