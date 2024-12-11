@@ -21,7 +21,7 @@
 ### 타입 변환 시 데이터 손실 가능성 설명.
 
 ### 정수와 실수 간 변환에서 소수점 이하 값 손실.
-
+-----------------------------------------------
 ## 섹션 8: Microcontroller and Hello World
 
 ### 53. Embedded - 'Hello World'
@@ -55,7 +55,7 @@
 ### 59. Compiler Settings on STM32CubeIDE
 
 ### STM32CubeIDE에서 컴파일러 최적화와 빌드 설정.
-
+---------------------------------------------------
 ## 섹션 9: Build Process
 
 ### 60. Embedded Project Build Process
@@ -69,7 +69,7 @@
 ### Assembly: 어셈블리 코드를 머신 코드로 변환.
 
 ### Linking: 개별 오브젝트 파일을 결합하여 실행 파일 생성.
-
+-----------------------------------------------------
 ## 섹션 10: Analyzing Embedded C Code
 
 ### 61. What is a Microcontroller?
@@ -97,7 +97,7 @@
 ### 66. IDE Option for Instruction-Level Debugging
 
 ### 명령어 단위 디버깅 방법과 IDE 옵션.
-
+------------------------------------------------------
 ## 섹션 11: Data Types to Manipulate Floating Point Data
 
 ### 67. Manipulating Decimal Numbers in 'C'
@@ -113,7 +113,7 @@
 ### 69. Working with Float and Double Variables
 
 ### 실수 데이터 타입의 연산 및 출력.
-
+-----------------------------------------------------
 ## 섹션 12: Taking Input from the User Using scanf()
 
 ### 70. Scanf Introduction
@@ -137,7 +137,7 @@
 ### e 또는 E 표기법 사용.
 
 ### 예: 3.14e+2 (314.0)
-
+------------------------------------------------
 ## 섹션 13: Pointers
 
 ### 76. Pointers in 'C'
@@ -153,7 +153,7 @@
 ### 78. Pointer Variables and Initialization
 
 ### 초기화되지 않은 포인터를 사용하는 경우의 문제점 설명.
-
+----------------------------------------------------
 ## 용어 정리
 
 ### Typecasting: 데이터 타입 변환.
