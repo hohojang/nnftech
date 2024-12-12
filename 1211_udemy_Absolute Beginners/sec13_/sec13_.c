@@ -1,5 +1,3 @@
-#include<stdio.h>
-
 /*
    1. Create a char type variable and initialize it to value 100
    2. Print the address of the above variable
