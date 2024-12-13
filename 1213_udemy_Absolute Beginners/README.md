@@ -111,54 +111,9 @@
 
 ### 118. Calculating Peripheral Register Addresses
 - **주변 장치 레지스터 주소 계산**: 주변 장치 레지스터의 주소를 계산하여 프로그램에서 액세스함.
-
-## 주요 코드 동작
-```c
-// LED를 켜기 위한 코드 예시시
-uint32_t *pClkCtrlReg   = (uint32_t*)0x4002104C;  // RCC_AHB2ENR 주소
-uint32_t *pPortCModeReg = (uint32_t*)0x48000800;  // GPIOC_MODER 주소
-uint32_t *pPortCOutReg  = (uint32_t*)0x48000814;  // GPIOC_ODR 주소
-
-// 1. GPIOC 주변 장치 클럭 활성화
-*pClkCtrlReg |= (1 << 3);
-
-// 2. I/O 핀의 모드를 출력으로 설정 (PC13)
-*pPortCModeReg &= ~(3 << 26);
-*pPortCModeReg |= (1 << 26);
-
-// 3. LED 켜기
-*pPortCOutReg |= (1 << 13);
-
------------------------------------------------------------------------
-### 119. LED ON 연습 코드
-- **LED ON 코드 실습**: 주어진 코드에 따라 GPIO 설정을 통해 LED를 켜는 연습.  
-  - GPIO의 출력을 설정하고, 메모리 맵에 대한 이해를 바탕으로 LED를 제어합니다.
-  
-#### 주요 동작 과정:
-1. **GPIOC 주변 장치 클럭 활성화**:  
-   - `RCC_AHB2ENR` 레지스터의 3번째 비트를 설정하여 GPIOC 주변 장치 클럭을 활성화합니다.
-   - 코드:  
-     ```c
-     *pClkCtrlReg |= (1 << 3);  // GPIOCEN 비트 설정
-     ```
-
-2. **GPIOC 핀(PC13) 출력 모드 설정**:  
-   - `GPIOC_MODER` 레지스터에서 PC13에 해당하는 비트들을 설정하여 출력 모드로 설정합니다.
-   - 코드:  
-     ```c
-     *pPortCModeReg &= ~(3 << 26);  // 26, 27 비트를 클리어
-     *pPortCModeReg |= (1 << 26);   // 26번 비트를 1로 설정
-     ```
-
-3. **PC13 핀을 HIGH로 설정하여 LED 켬**:  
-   - `GPIOC_ODR` 레지스터에서 13번 핀을 `HIGH`로 설정하여 LED를 켭니다.
-   - 코드:  
-     ```c
-     *pPortCOutReg |= (1 << 13);    // ODR13 비트 설정
-     ```
+### 주요 코드 동작
 
 #### 코드:
-```c
 uint32_t *pClkCtrlReg = (uint32_t*)0x4002104C;  // RCC_AHB2ENR 주소
 uint32_t *pPortCModeReg = (uint32_t*)0x48000800;  // GPIOC_MODER 주소
 uint32_t *pPortCOutReg = (uint32_t*)0x48000814;  // GPIOC_ODR 주소
