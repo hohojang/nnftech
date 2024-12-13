@@ -114,6 +114,7 @@
 ### 주요 코드 동작
 
 #### 코드:
+```c
 uint32_t *pClkCtrlReg = (uint32_t*)0x4002104C;  // RCC_AHB2ENR 주소
 uint32_t *pPortCModeReg = (uint32_t*)0x48000800;  // GPIOC_MODER 주소
 uint32_t *pPortCOutReg = (uint32_t*)0x48000814;  // GPIOC_ODR 주소
@@ -127,7 +128,7 @@ uint32_t *pPortCOutReg = (uint32_t*)0x48000814;  // GPIOC_ODR 주소
 
 // 3. PC13 핀을 HIGH로 설정하여 LED 켬
 *pPortCOutReg |= (1 << 13);    // ODR13 비트 설정
-
+```
 ## 섹션 19: Bitwise Shift Operators
 
 ### 120. Bitwise Right Shift Operator
