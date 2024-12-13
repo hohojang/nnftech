@@ -1,0 +1,7 @@
+//STM32L452RE 보드 
+
+uint32_t *pClkCtrlReg   = (uint32_t*)0x4002104C;  // RCC_AHB2ENR 주소
+
+uint32_t *pPortCModeReg = (uint32_t*)0x48000800;  // GPIOC_MODER 주소
+
+uint32_t *pPortCOutReg  = (uint32_t*)0x48000814;  // GPIOC_ODR 주소
