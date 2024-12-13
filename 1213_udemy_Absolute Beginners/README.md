@@ -158,22 +158,6 @@ uint32_t *pPortCOutReg = (uint32_t*)0x48000814;  // GPIOC_ODR 주소
      *pPortCOutReg |= (1 << 13);    // ODR13 비트 설정
      ```
 
-## 코드:
-```c
-uint32_t *pClkCtrlReg = (uint32_t*)0x4002104C;  // RCC_AHB2ENR 주소
-uint32_t *pPortCModeReg = (uint32_t*)0x48000800;  // GPIOC_MODER 주소
-uint32_t *pPortCOutReg = (uint32_t*)0x48000814;  // GPIOC_ODR 주소
-
-// 1. GPIOC 주변 장치 클럭 활성화
-*pClkCtrlReg |= (1 << 3);
-
-// 2. PC13 핀을 출력으로 설정
-*pPortCModeReg &= ~(3 << 26);  // 26, 27 비트 클리어
-*pPortCModeReg |= (1 << 26);   // 26번 비트 1로 설정
-
-// 3. PC13 핀을 HIGH로 설정하여 LED 켬
-*pPortCOutReg |= (1 << 13);    // ODR13 비트 설정
-```
 ## 섹션 19: Bitwise Shift Operators
 
 ### 120. Bitwise Right Shift Operator
