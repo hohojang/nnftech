@@ -112,11 +112,9 @@
 ### 118. Calculating Peripheral Register Addresses
 - **주변 장치 레지스터 주소 계산**: 주변 장치 레지스터의 주소를 계산하여 프로그램에서 액세스함.
 
----
-
-### 주요 코드 동작
+## 주요 코드 동작
 ```c
-// LED를 켜기 위한 코드 예시
+// LED를 켜기 위한 코드 예시시
 uint32_t *pClkCtrlReg   = (uint32_t*)0x4002104C;  // RCC_AHB2ENR 주소
 uint32_t *pPortCModeReg = (uint32_t*)0x48000800;  // GPIOC_MODER 주소
 uint32_t *pPortCOutReg  = (uint32_t*)0x48000814;  // GPIOC_ODR 주소
@@ -131,7 +129,7 @@ uint32_t *pPortCOutReg  = (uint32_t*)0x48000814;  // GPIOC_ODR 주소
 // 3. LED 켜기
 *pPortCOutReg |= (1 << 13);
 
----
+-----------------------------------------------------------------------
 ### 119. LED ON 연습 코드
 - **LED ON 코드 실습**: 주어진 코드에 따라 GPIO 설정을 통해 LED를 켜는 연습.  
   - GPIO의 출력을 설정하고, 메모리 맵에 대한 이해를 바탕으로 LED를 제어합니다.
