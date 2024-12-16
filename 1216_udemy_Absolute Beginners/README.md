@@ -16,9 +16,12 @@
 
 **예시 코드:**
 ```c
+// const로 선언된 변수 data는 수정할 수 없는 상수
 uint8_t const data = 10;
-uint8_t *ptr = (uint8_t*)&data;
-*ptr = 50;  
+// data의 주소를 포인터 ptr에 저장
+uint8_t ptr = (uint8_t)&data;
+// ptr을 통해 data의 값을 변경하려고 시도하면 컴파일 오류 발생
+ptr = 50;   
 ```
 
 # 섹션 22: Pin-read
