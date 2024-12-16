@@ -32,11 +32,12 @@ ptr = 50;
 **예시 코드:**
 ```c
 // GPIOA 핀 0을 읽어 GPIOC 핀 13의 LED를 제어하는 코드
-uint8_t pinStatus = (uint8_t)(*pPortAInReg & 0x1);  // GPIOA 핀 0 상태 읽기
+uint8_t pinStatus = (uint8_t)(pPortAInReg & 0x1); // GPIOA 핀 0 상태 읽기
+// pinStatus가 HIGH인 경우 LED를 켜고, LOW인 경우 LED를 끈다
 if (pinStatus) {
-    *pPortCOutReg |= (1 << 13);  // GPIOC 핀 13 HIGH (LED ON)
+pPortCOutReg |= (1 << 13); // GPIOC 핀 13 HIGH (LED ON)
 } else {
-    *pPortCOutReg &= ~(1 << 13); // GPIOC 핀 13 LOW (LED OFF)
+pPortCOutReg &= ~(1 << 13); // GPIOC 핀 13 LOW (LED OFF)
 }
 ```
 
@@ -58,9 +59,11 @@ if (pinStatus) {
 
 **예시 코드:**
 ```c
+// volatile로 선언된 flag는 ISR에서 변경될 수 있는 변수
 volatile uint32_t flag = 0;
+// ISR 핸들러 함수
 void ISR_handler(void) {
-    flag = 1;  // ISR에서 flag 값을 변경
+flag = 1; // ISR에서 flag 값을 1로 변경
 }
 ```
 
@@ -76,24 +79,26 @@ void ISR_handler(void) {
 
 **예시 코드 (구조체):**
 ```c
+// 자동차 모델을 나타내는 구조체 정의
 struct carModel {
-    uint32_t carNumber;
-    uint32_t carPrice;
-    uint16_t carMaxSpeed;
-    float carWeight;
+uint32_t carNumber; // 자동차 번호
+uint32_t carPrice; // 자동차 가격
+uint16_t carMaxSpeed; // 자동차 최대 속도
+float carWeight; // 자동차 무게
 };
 ```
 **예시 코드 (비트필드):**
 ```c
+// 패킷을 나타내는 구조체 정의 (비트 필드 사용)
 struct Packet {
-    uint32_t crc       : 2;
-    uint32_t status    : 1;
-    uint32_t payload   : 12;
-    uint32_t bat       : 3;
-    uint32_t sensor    : 3;
-    uint32_t longAddr  : 8;
-    uint32_t shortAddr : 2;
-    uint32_t addMode   : 1;
+uint32_t crc : 2; // CRC 체크 비트
+uint32_t status : 1; // 상태 비트
+uint32_t payload : 12; // 페이로드 데이터
+uint32_t bat : 3; // 배터리 상태
+uint32_t sensor : 3; // 센서 데이터
+uint32_t longAddr : 8; // 긴 주소
+uint32_t shortAddr : 2; // 짧은 주소
+uint32_t addMode : 1; // 추가 모드
 };
 ```
 # 섹션 26: union
@@ -108,32 +113,35 @@ struct Packet {
 
 **예시 코드:**
 ```c
+// 패킷을 나타내는 유니온 정의
 union Packet {
-    uint32_t packetValue;
-    struct {
-        uint32_t crc       : 2;
-        uint32_t status    : 1;
-        uint32_t payload   : 12;
-        uint32_t bat       : 3;
-        uint32_t sensor    : 3;
-        uint32_t longAddr  : 8;
-        uint32_t shortAddr : 2;
-        uint32_t addMode   : 1;
-    } packetFields;
+uint32_t packetValue; // 패킷 값을 저장하는 변수
+struct {
+uint32_t crc : 2; // CRC 체크 비트
+uint32_t status : 1; // 상태 비트
+uint32_t payload : 12; // 페이로드 데이터
+uint32_t bat : 3; // 배터리 상태
+uint32_t sensor : 3; // 센서 데이터
+uint32_t longAddr : 8; // 긴 주소
+uint32_t shortAddr : 2; // 짧은 주소
+uint32_t addMode : 1; // 추가 모드
+} packetFields; // 패킷 필드 구조체
 };
 ```
 ```c
+// 주소를 나타내는 유니온 정의
 union Address {
-    uint16_t shortAddr;
-    uint32_t longAddr;
+uint16_t shortAddr; // 짧은 주소
+uint32_t longAddr; // 긴 주소
 };
 ```
 ```c
 union Address addr;
-
+// 짧은 주소에 값 할당
 addr.shortAddr = 0xABCD;
+// 긴 주소에 값 할당 (짧은 주소와 메모리 공유)
 addr.longAddr = 0xEEEECCCC;
-
-printf("short addr = %#X\n", addr.shortAddr);
-printf("long addr = %#X\n", addr.longAddr);
+// 주소 값을 출력
+printf("short addr = %#X\n", addr.shortAddr); // 짧은 주소 출력
+printf("long addr = %#X\n", addr.longAddr); // 긴 주소 출력
 ```
