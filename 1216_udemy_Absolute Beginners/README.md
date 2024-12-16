@@ -42,12 +42,82 @@ if (pinStatus) {
 ### O0: 최적화가 전혀 적용되지 않음.
 ### O1: 최적화가 적용되어 코드 크기가 줄어들고 성능이 향상
 
-섹션 24: volatile
+# 섹션 24: 'volatile' type qualifier
+#### 강의 146 ~ 151
+- **volatile**는 변수의 값을 외부에서 변경할 수 있음을 나타내며, 최적화를 방지합니다.
+- 인터럽트 서비스 루틴(ISR)과 같이 하드웨어 레지스터나 외부 장치와 상호작용하는 코드에서 중요합니다.
+**예시 코드:**
+```c
+volatile uint32_t flag = 0;
+void ISR_handler(void) {
+    flag = 1;  // ISR에서 flag 값을 변경
+}
+```
 
-volatile를 사용하여 하드웨어와 인터럽트 관련 변수를 처리하는 방법을 배웁니다.
-섹션 25: Structures and Bit fields
+# 섹션 25: Structures and Bit fields
+#### 강의 152 ~ 159
+- **Structure**는 여러 변수들을 하나의 묶음으로 관리할 수 있는 데이터 구조입니다.
+- **Bit field**는 구조체 내에서 특정 비트 단위로 데이터를 저장할 수 있도록 도와줍니다.
+## 주요 내용:
+### 구조체의 크기 및 메모리 정렬 방식 이해
+### 비트 필드를 사용하여 메모리 공간을 절약하고, 하드웨어 레지스터를 효율적으로 다루는 방법을 배웁니다.
+**예시 코드 (구조체):**
+```c
+struct carModel {
+    uint32_t carNumber;
+    uint32_t carPrice;
+    uint16_t carMaxSpeed;
+    float carWeight;
+};
+```
+**예시 코드 (비트필드):**
+```c
+struct Packet {
+    uint32_t crc       : 2;
+    uint32_t status    : 1;
+    uint32_t payload   : 12;
+    uint32_t bat       : 3;
+    uint32_t sensor    : 3;
+    uint32_t longAddr  : 8;
+    uint32_t shortAddr : 2;
+    uint32_t addMode   : 1;
+};
+```
+# 섹션 26: union
+#### 강의 160 ~ 166
+- **Union**은 여러 데이터 타입이 동일한 메모리 위치를 공유하도록 하는 자료형입니다.
+- Union은 주로 메모리 절약을 위해 사용되며, 하나의 변수에 여러 가지 타입을 담을 수 있습니다.
+## 주요 내용:
+### Union과 Structure의 차이점 이해
+### Union을 사용하여 메모리를 효율적으로 관리하는 방법을 학습합니다.
+**예시 코드:**
+```c
+union Packet {
+    uint32_t packetValue;
+    struct {
+        uint32_t crc       : 2;
+        uint32_t status    : 1;
+        uint32_t payload   : 12;
+        uint32_t bat       : 3;
+        uint32_t sensor    : 3;
+        uint32_t longAddr  : 8;
+        uint32_t shortAddr : 2;
+        uint32_t addMode   : 1;
+    } packetFields;
+};
+```
+```c
+union Address {
+    uint16_t shortAddr;
+    uint32_t longAddr;
+};
+```
+```c
+union Address addr;
 
-구조체와 비트 필드를 사용하여 효율적인 메모리 관리 방법을 배웁니다.
-섹션 26: union
+addr.shortAddr = 0xABCD;
+addr.longAddr = 0xEEEECCCC;
 
-공용체를 사용하여 여러 데이터를 하나의 메모리 공간에 저장하고, 메모리 절약 방법을 익힙니다.
+printf("short addr = %#X\n", addr.shortAddr);
+printf("long addr = %#X\n", addr.longAddr);
+```
