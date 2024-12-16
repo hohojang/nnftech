@@ -20,9 +20,20 @@ uint8_t *ptr = (uint8_t*)&data;
 *ptr = 50;  // 수정이 불가능하여 컴파일 오류 발생
 ```
 
-섹션 22: Pin-read
-
-GPIO 핀의 값을 읽고, 조건문을 사용하여 하드웨어를 제어하는 예제를 다룹니다.
+# 섹션 22: Pin-read
+#### 강의 141 ~ 142
+- **GPIO 핀 읽기**는 임베디드 시스템에서 핀 상태를 확인하고 제어하는 기본적인 작업입니다.
+- GPIO를 통해 핀의 상태를 읽어와서 조건문으로 LED를 제어하는 예제를 작성합니다.
+**예시 코드:**
+```c
+// GPIOA 핀 0을 읽어 GPIOC 핀 13의 LED를 제어하는 코드
+uint8_t pinStatus = (uint8_t)(*pPortAInReg & 0x1);  // GPIOA 핀 0 상태 읽기
+if (pinStatus) {
+    *pPortCOutReg |= (1 << 13);  // GPIOC 핀 13 HIGH (LED ON)
+} else {
+    *pPortCOutReg &= ~(1 << 13); // GPIOC 핀 13 LOW (LED OFF)
+}
+```
 섹션 23: Optimization
 
 컴파일러 최적화 옵션을 사용하여 성능을 최적화하는 방법을 설명합니다.
