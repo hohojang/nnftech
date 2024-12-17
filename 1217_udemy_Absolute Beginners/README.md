@@ -94,3 +94,41 @@ int main(void)
 모든 요소를 0xFF로 초기화하고 특정 인덱스 값을 변경.
 ### 3. 두 배열 교환
 입력받은 두 배열의 내용을 교환하는 함수 구현.
+```c
+#include<stdio.h>
+#include<stdint.h>
+
+void display_array(int32_t *array, uint32_t size);
+void swap_arrays(int32_t *array1, int32_t *array2, uint32_t size);
+
+int main(void)
+{
+    int32_t array1[] = {1, 2, 3};
+    int32_t array2[] = {4, 5, 6};
+    printf("Before swap:\n");
+    display_array(array1, 3);
+    display_array(array2, 3);
+
+    swap_arrays(array1, array2, 3);
+    printf("After swap:\n");
+    display_array(array1, 3);
+    display_array(array2, 3);
+}
+
+void display_array(int32_t *array, uint32_t size)
+{
+    for (uint32_t i = 0; i < size; i++) {
+        printf("%d ", array[i]);
+    }
+    printf("\n");
+}
+
+void swap_arrays(int32_t *array1, int32_t *array2, uint32_t size)
+{
+    for (uint32_t i = 0; i < size; i++) {
+        int32_t temp = array1[i];
+        array1[i] = array2[i];
+        array2[i] = temp;
+    }
+}
+```
