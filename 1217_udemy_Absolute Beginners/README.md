@@ -48,7 +48,36 @@ int main(void)
 ### 풀업 저항 사용 시 미누름 상태에서 HIGH, 눌림 상태에서 LOW가 읽힘.
 ## 2. 로직 구현
 ### 행을 하나씩 LOW로 설정하고, 열의 상태를 검사하여 키 입력 확인.
-## 코드 동작 설명
+### 코드 동작 설명
 ### GPIOD 레지스터를 사용하여 키패드의 행(출력)과 열(입력) 핀 설정.
 ### 각 행의 출력을 LOW로 만들고, 열의 상태를 검사하여 키 입력 확인.
 ### 입력에 풀업 저항 활성화.
+```c
+#include<stdio.h>
+#include<stdint.h>
+
+void delay(void) { for (uint32_t i = 0; i < 300000; i++); }
+
+int main(void)
+{
+    uint32_t volatile *const pGPIODModeReg   = (uint32_t*)(0x48000C00);
+    uint32_t volatile *const pInputDataReg   = (uint32_t*)(0x48000C10);
+    uint32_t volatile *const pOutputDataReg  = (uint32_t*)(0x48000C14);
+    uint32_t volatile *const pClockCtrlReg   = (uint32_t*)(0x4002104C);
+    uint32_t volatile *const pPullupDownReg  = (uint32_t*)(0x48000C0C);
+
+    *pClockCtrlReg |= (1 << 3);   // GPIOD 클록 활성화
+    *pGPIODModeReg &= ~(0xFF);    // PD0-PD3 출력 모드 설정
+    *pGPIODModeReg |= 0x55;       // PD8-PD11 입력 모드
+    *pPullupDownReg |= (0x55 << 16);
+
+    while (1)
+    {
+        *pOutputDataReg |= 0x0F;  // 모든 행 HIGH 설정
+        *pOutputDataReg &= ~(1 << 0);  // 첫 번째 행 LOW
+
+        if (!(*pInputDataReg & (1 << 8))) { printf("1\n"); delay(); }
+        if (!(*pInputDataReg & (1 << 9))) { printf("2\n"); }
+    }
+}
+```
