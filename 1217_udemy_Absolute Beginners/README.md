@@ -98,37 +98,49 @@ int main(void)
 #include<stdio.h>
 #include<stdint.h>
 
+// 배열을 출력하는 함수 선언
 void display_array(int32_t *array, uint32_t size);
+
+// 두 배열을 교환하는 함수 선언
 void swap_arrays(int32_t *array1, int32_t *array2, uint32_t size);
 
 int main(void)
 {
+    // 배열 초기화
     int32_t array1[] = {1, 2, 3};
     int32_t array2[] = {4, 5, 6};
-    printf("Before swap:\n");
-    display_array(array1, 3);
-    display_array(array2, 3);
 
+    // 배열 교환 전 출력
+    printf("Before swap:\n");
+    display_array(array1, 3);  // array1 출력
+    display_array(array2, 3);  // array2 출력
+
+    // 배열 교환
     swap_arrays(array1, array2, 3);
+
+    // 배열 교환 후 출력
     printf("After swap:\n");
-    display_array(array1, 3);
-    display_array(array2, 3);
+    display_array(array1, 3);  // 교환된 array1 출력
+    display_array(array2, 3);  // 교환된 array2 출력
 }
 
+// 배열의 각 요소를 출력하는 함수 정의
 void display_array(int32_t *array, uint32_t size)
 {
     for (uint32_t i = 0; i < size; i++) {
-        printf("%d ", array[i]);
+        printf("%d ", array[i]);  // 배열의 각 원소 출력
     }
     printf("\n");
 }
 
+// 두 배열의 값을 교환하는 함수 정의
 void swap_arrays(int32_t *array1, int32_t *array2, uint32_t size)
 {
     for (uint32_t i = 0; i < size; i++) {
-        int32_t temp = array1[i];
-        array1[i] = array2[i];
-        array2[i] = temp;
+        int32_t temp = array1[i];  // array1의 현재 원소를 temp에 저장
+        array1[i] = array2[i];     // array2의 원소를 array1에 복사
+        array2[i] = temp;          // temp에 저장된 array1의 원소를 array2에 복사
     }
 }
+
 ```
