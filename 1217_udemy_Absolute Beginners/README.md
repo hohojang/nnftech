@@ -78,9 +78,9 @@ int main(void)
     uint32_t volatile *const pPullupDownReg  = (uint32_t*)(0x48000C0C);
 
     // GPIOD 클록 활성화
-    *pClockCtrlReg |= (1 << 3);   
-    *pGPIODModeReg &= ~(0xFF);    // PD0-PD3 출력 모드 설정
-    *pGPIODModeReg |= 0x55;       // PD8-PD11 입력 모드
+    *pClockCtrlReg  |= (1 << 3);   
+    *pGPIODModeReg  &= ~(0xFF);    // PD0-PD3 출력 모드 설정
+    *pGPIODModeReg  |= 0x55;       // PD8-PD11 입력 모드
     *pPullupDownReg |= (0x55 << 16);
 
     while (1)
