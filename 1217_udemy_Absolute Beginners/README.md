@@ -142,8 +142,8 @@ void swap_arrays(int32_t *array1, int32_t *array2, uint32_t size)
         array2[i] = temp;          // temp에 저장된 array1의 원소를 array2에 복사
     }
 }
-
 ```
+
 # 섹션 30: 문자열 
 
 # 주요 내용
@@ -157,3 +157,47 @@ void swap_arrays(int32_t *array1, int32_t *array2, uint32_t size)
 ### %[^\n] 포맷을 사용하여 문자열을 공백 포함 입력받음.
 ## 3. 구조체 활용
 ### 학생 정보를 저장하고 출력하는 프로그램 작성.
+
+```c
+#include<stdio.h>
+#include<stdint.h>
+#include<string.h>
+
+// 학생 정보를 저장하는 구조체 정의
+typedef struct {
+    int rollNumber;       // 학번
+    char name[100];       // 이름
+    char branch[50];      // 학과
+    char dob[15];         // 생일 (문자열로 저장)
+    int semester;         // 학기
+} STUDENT_INFO_t;
+
+// 학생 정보 배열 초기화 (2명의 학생 정보)
+STUDENT_INFO_t students[2] = {
+    {9876, "Ashok Kumar", "Mechanical", "12/11/1999", 7},   // 첫 번째 학생
+    {1234, "Ram Kumar", "Computer", "01/01/2000", 6}         // 두 번째 학생
+};
+
+// 학생 정보를 출력하는 함수 선언
+void display_all_records(STUDENT_INFO_t *records, int size);
+
+int main()
+{
+    // students 배열을 display_all_records 함수에 전달하여 학생 정보 출력
+    display_all_records(students, 2);
+    return 0;
+}
+
+// 학생 정보를 출력하는 함수 정의
+void display_all_records(STUDENT_INFO_t *records, int size)
+{
+    // 주어진 크기만큼 반복하여 각 학생 정보를 출력
+    for (int i = 0; i < size; i++) {
+        printf("Roll Number: %d\n", records[i].rollNumber);   // 학번 출력
+        printf("Name: %s\n", records[i].name);                 // 이름 출력
+        printf("Branch: %s\n", records[i].branch);             // 학과 출력
+        printf("DOB: %s\n", records[i].dob);                   // 생일 출력
+        printf("Semester: %d\n\n", records[i].semester);       // 학기 출력
+    }
+}
+```
