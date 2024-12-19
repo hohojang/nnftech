@@ -4,6 +4,7 @@ STM32L452RET6 MCU와 **EBYTE E22900T22S LoRa 모듈**을 사용하여
 
 **SPI 통신**을 통해 데이터를 송수신하고, **LED 상태**로 송수신 상태를 시각적으로 표시
 
+LED 토글 결과 : [https://vimeo.com/1040689064?share=copy#t=0]
 ---
 
 ## 📜 주요 기능
