@@ -79,3 +79,53 @@
       LED_Toggle();
       HAL_Delay(1000);
   }
+  ```
+  ### 2. **`LoRa.c`**
+- **역할**:
+- E22900T22S 모듈 초기화 및 제어(SPI 레지스터 읽기/쓰기).
+- 데이터를 송수신하고 상태를 확인.
+- **핵심 함수**:
+- LoRa_Init(): LoRa 모듈 초기화.
+- LoRa_SendData(): 데이터를 FIFO에 쓰고 송신.
+- LoRa_ReceiveData(): FIFO에서 데이터를 읽고 수신.
+- LoRa_CheckDIO(): DIO 핀 이벤트 감지.
+
+
+## 🔧 사용 방법
+
+### 1. 하드웨어 연결
+EBYTE E22900T22S 모듈과 STM32 핀을 아래와 같이 연결:
+
+| STM32 핀 | E22900T22S 핀 | 기능              |
+|----------|---------------|-------------------|
+| PA1      | SCK           | SPI 클럭          |
+| PA4      | NSS           | SPI Chip Select   |
+| PA6      | MISO          | SPI 데이터 입력   |
+| PA7      | MOSI          | SPI 데이터 출력   |
+| PB0      | RESET         | 모듈 리셋        |
+| PB2      | DIO0          | 송수신 이벤트 감지|
+
+---
+
+### 2. CubeMX 설정
+1. **SPI1 설정**:
+   - Full-Duplex Master 모드로 설정.
+   - NSS 핀(Software 관리) 사용.
+2. **GPIO 설정**:
+   - **PA8**: Output (LED 제어용)
+   - **PB0**: Output (LoRa RESET 핀)
+   - **PB2**: Input (LoRa DIO0 핀)
+3. 코드 생성 후 `LoRa.c` 및 `main.c` 파일을 프로젝트에 추가.
+
+---
+
+### 3. 펌웨어 업로드
+1. STM32CubeIDE 또는 Keil을 사용하여 코드를 빌드.
+2. ST-LINK를 사용해 STM32에 펌웨어를 업로드.
+
+---
+
+### 4. 동작 확인
+1. STM32 보드와 LoRa 모듈을 전원에 연결.
+2. 데이터 송수신 중 LED(PA8)가 켜짐/꺼짐 상태를 표시.
+3. 디버깅 도구(UART 등)를 추가하면 송수신 데이터를 확인할 수 있습니다.
