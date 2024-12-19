@@ -59,7 +59,7 @@ STM32L452RET6 MCU와 **EBYTE E22900T22S LoRa 모듈**을 사용하여
 
 ## 💻 소프트웨어 구조
 ### 1. **`main.c`**
-- **역할**:
+- **주요 기능 및 역할**:
   - MCU 초기화, E22900T22S와의 통신 제어
   - 송수신 상태를 기반으로 LED 제어
 - **핵심 루프**:
@@ -83,7 +83,7 @@ STM32L452RET6 MCU와 **EBYTE E22900T22S LoRa 모듈**을 사용하여
   }
   ```
 ### 2. **`LoRa.c`**
-- **역할**:
+- **주요 기능 및 역할**:
 - E22900T22S 모듈 초기화 및 제어(SPI 레지스터 읽기/쓰기).
 - 데이터를 송수신하고 상태를 확인
 - **핵심 함수**:
@@ -92,7 +92,31 @@ STM32L452RET6 MCU와 **EBYTE E22900T22S LoRa 모듈**을 사용하여
 - LoRa_ReceiveData(): FIFO에서 데이터를 읽고 수신
 - LoRa_CheckDIO(): DIO 핀 이벤트 감지
 
-
+### 3. **`LoRa.h`**
+- **주요 기능 및 역할**:
+- LoRa 모듈 초기화:
+```void LoRa_Init(void);```
+- LoRa 모듈의 RESET 핀을 사용해 모듈을 초기화합니다.
+- 초기화는 LoRa 모듈과 STM32 간의 SPI 통신을 설정하기 전에 반드시 수행해야 합니다.
+- LoRa 레지스터 읽기/쓰기:
+```void LoRa_WriteRegister(uint8_t reg, uint8_t value);```
+- LoRa 모듈의 SPI 레지스터에 데이터를 기록합니다.
+- 레지스터는 LoRa 모듈의 설정을 변경하거나 데이터를 저장하는 데 사용됩니다.
+```uint8_t LoRa_ReadRegister(uint8_t reg);```
+- LoRa 모듈의 SPI 레지스터에서 데이터를 읽어옵니다.
+- 레지스터 읽기를 통해 현재 상태나 설정 값을 확인할 수 있습니다.
+- LoRa 데이터 송수신:
+```void LoRa_SendData(uint8_t *data, uint8_t length);```
+- FIFO에 데이터를 기록하고 LoRa 모듈의 송신(Tx) 모드를 활성화합니다.
+- 이 함수는 데이터를 송신할 때 호출됩니다.
+```void LoRa_ReceiveData(uint8_t *buffer, uint8_t length);```
+- FIFO에서 데이터를 읽고 LoRa 모듈의 수신(Rx) 모드를 활성화합니다.
+- 이 함수는 수신된 데이터를 처리하는 데 사용됩니다.
+- DIO 핀 확인:
+```void LoRa_CheckDIO(void);```
+- LoRa 모듈의 DIO 핀 상태를 확인하고, 이벤트(DIO0 핀에서 송수신 완료 등)를 처리합니다.
+- DIO 핀은 송수신 완료나 오류 발생 등 모듈 상태를 알려주는 데 사용됩니다.
+- 
 -------
 ## 🔧 사용 방법
 
