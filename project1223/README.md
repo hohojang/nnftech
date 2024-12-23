@@ -51,4 +51,4 @@ int _write(int file, char *ptr, int len) {
 }
 ```
 # 하드웨어 문제 상황 (USB to TTL 오류)
-### 현재 USB to TTL 어댑터가 작동하지 않아 UART를 통해 센서 값을 확인할 수 없는 상황
+### 현재 USB to TTL 어댑터가 작동하지 않아 UART를 통해 센서 값을 확인할 수 없는 상황입니다.
