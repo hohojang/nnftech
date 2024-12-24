@@ -64,7 +64,7 @@
 ### 3.2. UART 데이터 출력
 - UART를 통해 센서 데이터를 주기적으로 출력합니다.  
 
-**UART 출력 예시:**
+**UART 출력 :**
 ```plaintext
 --- Sensor Data ---
 PIR Sensor   : MOTION
