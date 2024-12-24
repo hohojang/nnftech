@@ -1,5 +1,7 @@
 # STM32L452RET6 - PIR 및 CDS 센서 데이터 UART 출력 
 
+# 결과 url : [https://vimeo.com/1041916083?share=copy#t=0]
+
 ##  1. 하드웨어 구성
 
 ### 센서 및 핀 매핑
