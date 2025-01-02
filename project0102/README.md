@@ -14,6 +14,25 @@
 
 ---
 
+| **핀 번호** | **역할**       | **설정**   | **연결된 장치**       | **설명**                       |
+|-------------|---------------|------------|-----------------------|--------------------------------|
+| **PA10**    | `GPIO_Output` | SSR 릴레이 | 방수등 제어            | `GPIO_PIN_SET/OFF`로 제어        |
+| **PC6**     | `GPIO_Input`  | PIR 센서   | 사람 움직임 감지       | `GPIO_PIN_SET` 감지              |
+| **PC7**     | `GPIO_Input`  | CDS 센서   | 디지털 조도 감지       | `GPIO_PIN_SET` 감지              |
+| **PB0**     | `ADC1_IN15`   | CDS 센서   | 아날로그 조도 측정     | ADC 값을 읽어 조도 판단        |
+| **PB10**    | `USART3_TX`   | LoRa 모듈  | UART 송신             | 데이터 송신                    |
+| **PB11**    | `USART3_RX`   | LoRa 모듈  | UART 수신             | 데이터 수신                    |
+| **PA4**     | `SPI1_NSS`    | LoRa 모듈  | SPI Slave Select      | SPI 슬레이브 선택 신호         |
+| **PA5**     | `SPI1_SCK`    | LoRa 모듈  | SPI Serial Clock      | SPI 클럭 신호 제공             |
+| **PA6**     | `SPI1_MISO`   | LoRa 모듈  | SPI Master-In         | SPI 데이터 입력                |
+| **PA7**     | `SPI1_MOSI`   | LoRa 모듈  | SPI Master-Out        | SPI 데이터 출력                |
+| **PC8**     | `GPIO_EXTI8`  | LoRa DIO0  | 외부 인터럽트         | LoRa 상태 알림 처리            |
+| **PB12**    | `GPIO_Output` | -          | 추가 GPIO 포트        | 확장 기능 포트로 사용 가능      |
+
+---
+
+---
+
 ## **시스템 동작 다이어그램**
 
 ```plaintext
