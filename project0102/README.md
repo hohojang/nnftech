@@ -33,8 +33,11 @@ LoRa 모듈: 시스템 상태 및 오류 정보를 관제 시스템으로 전송
 
 ## **주요 동작 함수 코드**
 # 1. 센서 데이터 읽기
+
 함수: Read_Sensors()
+
 설명: PIR 센서와 CDS 센서 데이터를 읽고 저장
+
 ```코드:
 void Read_Sensors(void) {
     pir_state = HAL_GPIO_ReadPin(GPIOC, GPIO_PIN_6);
@@ -47,8 +50,11 @@ void Read_Sensors(void) {
 }
 ```
 # 2. 방수등 제어
+
 함수: Control_Light()
+
 설명: 센서 데이터를 기반으로 방수등을 켜고 끄며 오류를 감지
+
 로직:
 CDS 값이 기준 이하 + PIR 감지 → 조명 ON
 CDS 값이 기준 초과 + PIR 미감지 → 4초 후 조명 OFF
@@ -63,7 +69,9 @@ void Control_Light(void) {
 }
 ```
 # 3. LoRa 데이터 전송
+
 함수: LoRa_SendData()
+
 설명: LoRa를 통해 시스템 상태 및 오류 메시지를 관제 시스템으로 전송
 ```코드:
 void LoRa_SendData(const char *data) {
@@ -73,7 +81,9 @@ void LoRa_SendData(const char *data) {
 }
 ```
 # 4. 상태 테이블 전송
+
 함수: Send_EEAM_Status()
+
 설명: EEA-M 패킷을 생성하여 시스템 상태 정보를 LoRa로 전송
 ```코드:
 void Send_EEAM_Status(void) {
@@ -86,7 +96,9 @@ void Send_EEAM_Status(void) {
 }
 ```
 # 5. 오류 처리
+
 함수: Error_Alert()
+
 설명: 오류 발생 시 UART 및 LoRa를 통해 오류 메시지를 전송
 ```코드:
 void Error_Alert(const char *message) {
