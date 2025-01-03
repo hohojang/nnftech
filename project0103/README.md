@@ -13,8 +13,10 @@
 void Control_Light(void) {
     static uint32_t light_timer = 0; // 타이머 변수
     GPIO_PinState light_state = HAL_GPIO_ReadPin(GPIOA, GPIO_PIN_10); // 현재 조명 상태
+    
+    // 동작 감지 or 미감지
 
-    // PIR 감지 상태
+    // PIR 감지 상태 
     if (pir_state == GPIO_PIN_SET) {
         if (light_state == GPIO_PIN_RESET && cds_analog_value <= CDS_LIGHT_THRESHOLD) {
             // 어두움 && PIR 감지 && 조명 OFF → 조명 ON
