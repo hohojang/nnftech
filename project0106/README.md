@@ -90,6 +90,51 @@ void Control_Light(void) {
 }
 ```
 2. 기존 코드
+```C
+/**
+ * @brief 조명 제어 및 타이머 처리 (PIR 상태 및 타이머 중심, 최적화)
+ */
+void Control_Light(void) {
+    static uint32_t light_timer = 0; // 타이머 변수
+    GPIO_PinState light_state = HAL_GPIO_ReadPin(GPIOA, GPIO_PIN_10); // 현재 조명 상태
+
+    if (pir_state == GPIO_PIN_SET) {
+        //PIR 감지 상태
+        if (light_state == GPIO_PIN_RESET && cds_analog_value <= CDS_LIGHT_THRESHOLD) {
+            // 어두움 && PIR 감지 && 조명 OFF → 조명 ON
+            HAL_GPIO_WritePin(GPIOA, GPIO_PIN_10, GPIO_PIN_SET);
+            UART_SendString("[INFO] Light ON (Dark + PIR Detected).\r\n");
+        }
+        light_timer = 0; // 타이머 초기화
+    } else {
+        //PIR 미감지 상태
+        if (light_state == GPIO_PIN_SET) {
+            // 타이머 시작 또는 4초 경과 시 조명 OFF
+            if (light_timer == 0) {
+                light_timer = HAL_GetTick(); // 타이머 시작
+            } else if ((HAL_GetTick() - light_timer) >= LIGHT_OFF_DELAY) {
+                HAL_GPIO_WritePin(GPIOA, GPIO_PIN_10, GPIO_PIN_RESET); // 조명 OFF
+                UART_SendString("[INFO] Light OFF (No PIR for 4s).\r\n");
+                light_timer = 0; // 타이머 초기화
+            }
+        } else {
+            // 조명이 꺼져 있을 때 타이머 리셋
+            light_timer = 0;
+        }
+
+        // 오류 감지
+        if (cds_analog_value > CDS_LIGHT_THRESHOLD && light_state == GPIO_PIN_SET) {
+            Error_Alert("No PIR, but Light is ON despite Bright Environment.");
+        }
+        if (cds_analog_value <= CDS_LIGHT_THRESHOLD && light_state == GPIO_PIN_RESET) {
+            Error_Alert("PIR Detected, but Light is OFF.");
+        }
+    }
+
+    // 상태 전송
+    Send_EEAM_Status();
+}
+```
 
 # 기능 설명
 ## 1. SSR 제어 (SSR_Control)
