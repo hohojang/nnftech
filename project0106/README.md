@@ -48,11 +48,11 @@ void SSR_Control(uint8_t pir_status, GPIO_PinState ssr_state, uint32_t *light_ti
         HAL_GPIO_WritePin(GPIOA, GPIO_PIN_10, GPIO_PIN_SET);
         UART_SendString("[INFO] Light ON (PIR Detected).\r\n");
         *light_timer = 0; // 타이머 초기화
-    } 
+    }
     else if (!pir_status && ssr_state == GPIO_PIN_SET) {
         if (*light_timer == 0) {
             *light_timer = HAL_GetTick(); // 타이머 시작
-        } 
+        }
         else if ((HAL_GetTick() - *light_timer) >= LIGHT_OFF_DELAY) {
             HAL_GPIO_WritePin(GPIOA, GPIO_PIN_10, GPIO_PIN_RESET);
             UART_SendString("[INFO] Light OFF (No PIR Detected for 4s).\r\n");
@@ -64,31 +64,37 @@ void SSR_Control(uint8_t pir_status, GPIO_PinState ssr_state, uint32_t *light_ti
 /**
  * @brief 오류 감지 및 메시지 전송
  */
-void Custom_Error_Handler(bool condition, uint32_t *timer, const char *message) {
-    if (condition) {
-        if (*timer == 0) {
-            *timer = HAL_GetTick(); // 타이머 시작
-        } 
-        else if ((HAL_GetTick() - *timer) >= 7000) {
-            Error_Alert(message);
-            LoRa_SendData(message);
-            *timer = 0; // 타이머 초기화
+void Custom_Error_Handler(uint8_t pir_status, uint8_t cds_dark, GPIO_PinState ssr_state,
+                          uint32_t *error_timer_1, uint32_t *error_timer_2) {
+    // 오류 1: PIR 감지 + CDS 밝음 + SSR OFF
+    if (pir_status && !cds_dark && ssr_state == GPIO_PIN_RESET) {
+        if (*error_timer_1 == 0) {
+            *error_timer_1 = HAL_GetTick();
         }
-    } 
-    else {
-        *timer = 0; // 조건 해제 시 타이머 초기화
+        else if ((HAL_GetTick() - *error_timer_1) >= 7000) {
+            Error_Alert("[ERROR] PIR Detected, but Light is OFF (Bright Environment).");
+            LoRa_SendData("[ERROR] PIR Detected, but Light is OFF (Bright Environment).");
+            *error_timer_1 = 0;
+        }
     }
-}
+    else {
+        *error_timer_1 = 0; // 조건 해제 시 타이머 초기화
+    }
 
-/**
- * @brief 오류 감지 (명확한 조건 기반)
- */
-void Check_Errors(uint8_t pir_status, uint8_t cds_dark, GPIO_PinState ssr_state, 
-                  uint32_t *error_timer_1, uint32_t *error_timer_2) {
-    Custom_Error_Handler(pir_status && !cds_dark && ssr_state == GPIO_PIN_RESET, 
-                         error_timer_1, "[ERROR] PIR Detected, but Light is OFF (Bright Environment).");
-    Custom_Error_Handler(!pir_status && cds_dark && ssr_state == GPIO_PIN_SET, 
-                         error_timer_2, "[ERROR] No PIR, but Light is ON (Dark Environment).");
+    // 오류 2: PIR 미감지 + CDS 어두움 + SSR ON
+    if (!pir_status && cds_dark && ssr_state == GPIO_PIN_SET) {
+        if (*error_timer_2 == 0) {
+            *error_timer_2 = HAL_GetTick();
+        }
+        else if ((HAL_GetTick() - *error_timer_2) >= 7000) {
+            Error_Alert("[ERROR] No PIR, but Light is ON (Dark Environment).");
+            LoRa_SendData("[ERROR] No PIR, but Light is ON (Dark Environment).");
+            *error_timer_2 = 0;
+        }
+    }
+    else {
+        *error_timer_2 = 0; // 조건 해제 시 타이머 초기화
+    }
 }
 
 /**
@@ -107,7 +113,7 @@ void Control_Light(SensorData *data) {
     SSR_Control(pir_status, ssr_state, &light_timer);
 
     // 오류 감지
-    Check_Errors(pir_status, cds_dark, ssr_state, &error_timer_1, &error_timer_2);
+    Custom_Error_Handler(pir_status, cds_dark, ssr_state, &error_timer_1, &error_timer_2);
 
     // 상태 전송
     Send_EEAM_Status();
