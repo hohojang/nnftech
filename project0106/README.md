@@ -42,53 +42,55 @@
 ```C
 /**
  * @brief SSR 제어 및 타이머 처리
- * @param pir_status PIR 상태 (1 = 감지, 0 = 미감지)
- * @param ssr_state SSR 상태 (ON/OFF)
- * @param light_timer 타이머 변수
  */
 void SSR_Control(uint8_t pir_status, GPIO_PinState ssr_state, uint32_t *light_timer) {
     if (pir_status && ssr_state == GPIO_PIN_RESET) {
         HAL_GPIO_WritePin(GPIOA, GPIO_PIN_10, GPIO_PIN_SET);
         UART_SendString("[INFO] Light ON (PIR Detected).\r\n");
-        *light_timer = 0;
-    }
+        *light_timer = 0; // 타이머 초기화
+    } 
     else if (!pir_status && ssr_state == GPIO_PIN_SET) {
-        if (*light_timer == 0) *light_timer = HAL_GetTick();
+        if (*light_timer == 0) {
+            *light_timer = HAL_GetTick(); // 타이머 시작
+        } 
         else if ((HAL_GetTick() - *light_timer) >= LIGHT_OFF_DELAY) {
             HAL_GPIO_WritePin(GPIOA, GPIO_PIN_10, GPIO_PIN_RESET);
             UART_SendString("[INFO] Light OFF (No PIR Detected for 4s).\r\n");
-            *light_timer = 0;
+            *light_timer = 0; // 타이머 초기화
         }
     }
 }
-/**
- * @brief 오류 감지 및 7초 후 메시지 전송
- * @param condition 오류 조건 (1 = 조건 만족)
- * @param timer 오류 타이머 변수
- * @param message 오류 메시지
- */
-typedef struct {
-    uint32_t error_timer_1;
-    uint32_t error_timer_2;
-} ErrorTimer;
-
-ErrorTimer error_timer = {0, 0};
 
 /**
  * @brief 오류 감지 및 메시지 전송
  */
 void Custom_Error_Handler(bool condition, uint32_t *timer, const char *message) {
     if (condition) {
-        if (*timer == 0) *timer = HAL_GetTick();
+        if (*timer == 0) {
+            *timer = HAL_GetTick(); // 타이머 시작
+        } 
         else if ((HAL_GetTick() - *timer) >= 7000) {
             Error_Alert(message);
             LoRa_SendData(message);
-            *timer = 0;
+            *timer = 0; // 타이머 초기화
         }
-    } else {
-        *timer = 0;
+    } 
+    else {
+        *timer = 0; // 조건 해제 시 타이머 초기화
     }
 }
+
+/**
+ * @brief 오류 감지 (명확한 조건 기반)
+ */
+void Check_Errors(uint8_t pir_status, uint8_t cds_dark, GPIO_PinState ssr_state, 
+                  uint32_t *error_timer_1, uint32_t *error_timer_2) {
+    Custom_Error_Handler(pir_status && !cds_dark && ssr_state == GPIO_PIN_RESET, 
+                         error_timer_1, "[ERROR] PIR Detected, but Light is OFF (Bright Environment).");
+    Custom_Error_Handler(!pir_status && cds_dark && ssr_state == GPIO_PIN_SET, 
+                         error_timer_2, "[ERROR] No PIR, but Light is ON (Dark Environment).");
+}
+
 /**
  * @brief 조명 제어 및 타이머 처리
  */
@@ -101,18 +103,16 @@ void Control_Light(SensorData *data) {
     uint8_t pir_status = (data->pir_state == GPIO_PIN_SET) ? 1 : 0;
     uint8_t cds_dark = (data->cds_analog_value <= CDS_LIGHT_THRESHOLD) ? 1 : 0;
 
-    /** SSR 제어 **/
+    // SSR 제어
     SSR_Control(pir_status, ssr_state, &light_timer);
 
-    /** 오류 감지 **/
-    Custom_Error_Handler(pir_status && !cds_dark && ssr_state == GPIO_PIN_RESET, &error_timer_1,
-                   "[ERROR] PIR Detected, but Light is OFF (Bright Environment).");
-    Custom_Error_Handler(!pir_status && cds_dark && ssr_state == GPIO_PIN_SET, &error_timer_2,
-                   "[ERROR] No PIR, but Light is ON (Dark Environment).");
+    // 오류 감지
+    Check_Errors(pir_status, cds_dark, ssr_state, &error_timer_1, &error_timer_2);
 
-    /** 상태 전송 **/
+    // 상태 전송
     Send_EEAM_Status();
 }
+
 ```
 2. 기존 코드
 ```C
