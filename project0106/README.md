@@ -42,59 +42,65 @@
 ```C
 /**
  * @brief SSR 제어 및 타이머 처리
+ * @param pir_status PIR 상태 (1 = 감지, 0 = 미감지)
+ * @param ssr_state SSR 상태 (ON/OFF)
+ * @param light_timer 타이머 변수
  */
 void SSR_Control(uint8_t pir_status, GPIO_PinState ssr_state, uint32_t *light_timer) {
+    // Rule 1: PIR 감지 && SSR OFF → SSR ON
     if (pir_status && ssr_state == GPIO_PIN_RESET) {
         HAL_GPIO_WritePin(GPIOA, GPIO_PIN_10, GPIO_PIN_SET);
         UART_SendString("[INFO] Light ON (PIR Detected).\r\n");
         *light_timer = 0; // 타이머 초기화
+        return;
     }
-    else if (!pir_status && ssr_state == GPIO_PIN_SET) {
+
+    // Rule 2: PIR 미감지 && SSR ON → 타이머로 SSR OFF
+    if (!pir_status && ssr_state == GPIO_PIN_SET) {
         if (*light_timer == 0) {
             *light_timer = HAL_GetTick(); // 타이머 시작
-        }
-        else if ((HAL_GetTick() - *light_timer) >= LIGHT_OFF_DELAY) {
+        } else if ((HAL_GetTick() - *light_timer) >= LIGHT_OFF_DELAY) {
             HAL_GPIO_WritePin(GPIOA, GPIO_PIN_10, GPIO_PIN_RESET);
             UART_SendString("[INFO] Light OFF (No PIR Detected for 4s).\r\n");
             *light_timer = 0; // 타이머 초기화
         }
     }
 }
-
 /**
  * @brief 오류 감지 및 메시지 전송
+ * @param pir_status PIR 상태 (1 = 감지, 0 = 미감지)
+ * @param cds_dark CDS 상태 (1 = 어두움, 0 = 밝음)
+ * @param ssr_state SSR 상태 (ON/OFF)
+ * @param error_timer 오류 타이머 변수
+ * @param message 오류 메시지
  */
-void Custom_Error_Handler(uint8_t pir_status, uint8_t cds_dark, GPIO_PinState ssr_state,
-                          uint32_t *error_timer_1, uint32_t *error_timer_2) {
-    // 오류 1: PIR 감지 + CDS 밝음 + SSR OFF
-    if (pir_status && !cds_dark && ssr_state == GPIO_PIN_RESET) {
-        if (*error_timer_1 == 0) {
-            *error_timer_1 = HAL_GetTick();
+void Handle_Error(bool condition, uint32_t *error_timer, const char *message) {
+    if (condition) {
+        if (*error_timer == 0) {
+            *error_timer = HAL_GetTick(); // 타이머 시작
+        } else if ((HAL_GetTick() - *error_timer) >= 7000) {
+            Error_Alert(message);
+            LoRa_SendData(message);
+            *error_timer = 0; // 타이머 초기화
         }
-        else if ((HAL_GetTick() - *error_timer_1) >= 7000) {
-            Error_Alert("[ERROR] PIR Detected, but Light is OFF (Bright Environment).");
-            LoRa_SendData("[ERROR] PIR Detected, but Light is OFF (Bright Environment).");
-            *error_timer_1 = 0;
-        }
+    } else {
+        *error_timer = 0; // 오류 조건 해제 시 타이머 초기화
     }
-    else {
-        *error_timer_1 = 0; // 조건 해제 시 타이머 초기화
-    }
+}
+/**
+ * @brief 오류 감지 (단일 조건 기반)
+ */
+void Check_Errors(uint8_t pir_status, uint8_t cds_dark, GPIO_PinState ssr_state,
+                  uint32_t *error_timer_1, uint32_t *error_timer_2) {
+    // Error 1: PIR 감지 && CDS 밝음 && SSR OFF
+    Handle_Error(pir_status && !cds_dark && ssr_state == GPIO_PIN_RESET,
+                 error_timer_1,
+                 "[ERROR] PIR Detected, but Light is OFF (Bright Environment)");
 
-    // 오류 2: PIR 미감지 + CDS 어두움 + SSR ON
-    if (!pir_status && cds_dark && ssr_state == GPIO_PIN_SET) {
-        if (*error_timer_2 == 0) {
-            *error_timer_2 = HAL_GetTick();
-        }
-        else if ((HAL_GetTick() - *error_timer_2) >= 7000) {
-            Error_Alert("[ERROR] No PIR, but Light is ON (Dark Environment).");
-            LoRa_SendData("[ERROR] No PIR, but Light is ON (Dark Environment).");
-            *error_timer_2 = 0;
-        }
-    }
-    else {
-        *error_timer_2 = 0; // 조건 해제 시 타이머 초기화
-    }
+    // Error 2: PIR 미감지 && CDS 어두움 && SSR ON
+    Handle_Error(!pir_status && cds_dark && ssr_state == GPIO_PIN_SET,
+                 error_timer_2,
+                 "[ERROR] No PIR, but Light is ON (Dark Environment)");
 }
 
 /**
@@ -113,11 +119,9 @@ void Control_Light(SensorData *data) {
     SSR_Control(pir_status, ssr_state, &light_timer);
 
     // 오류 감지
-    Custom_Error_Handler(pir_status, cds_dark, ssr_state, &error_timer_1, &error_timer_2);
-
-    // 상태 전송
-    Send_EEAM_Status();
+    Check_Errors(pir_status, cds_dark, ssr_state, &error_timer_1, &error_timer_2);
 }
+
 
 ```
 2. 기존 코드
