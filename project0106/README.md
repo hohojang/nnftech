@@ -203,15 +203,4 @@ Error 2: PIR 미감지 + 어두움 + SSR ON
 
 
 
-+-------------------------+      PIR Detected      +-------------------------+
-|      SSR OFF            | --------------------> |      SSR ON             |
-| (No PIR, Light OFF)     |                       | (PIR Detected, Light ON)|
-+-------------------------+                       +-------------------------+
-           ^                                           |
-           | No PIR + Timer (4s elapsed)               |
-           |                                           v
-+-------------------------+      Timer Reset     +-------------------------+
-|    Timer Started        | <------------------ |   PIR Not Detected      |
-| (No PIR, Light ON)      |                       | Timer Running          |
-+-------------------------+                       +-------------------------+
 
