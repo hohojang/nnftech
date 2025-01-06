@@ -52,14 +52,13 @@ void SSR_Control(uint8_t pir_status, GPIO_PinState ssr_state, uint32_t *light_ti
         HAL_GPIO_WritePin(GPIOA, GPIO_PIN_10, GPIO_PIN_SET);
         UART_SendString("[INFO] Light ON (PIR Detected).\r\n");
         *light_timer = 0; // 타이머 초기화
-        return;
     }
-
     // Rule 2: PIR 미감지 && SSR ON → 타이머로 SSR OFF
-    if (!pir_status && ssr_state == GPIO_PIN_SET) {
+    else if (!pir_status && ssr_state == GPIO_PIN_SET) {
         if (*light_timer == 0) {
             *light_timer = HAL_GetTick(); // 타이머 시작
-        } else if ((HAL_GetTick() - *light_timer) >= LIGHT_OFF_DELAY) {
+        }
+        else if ((HAL_GetTick() - *light_timer) >= LIGHT_OFF_DELAY) {
             HAL_GPIO_WritePin(GPIOA, GPIO_PIN_10, GPIO_PIN_RESET);
             UART_SendString("[INFO] Light OFF (No PIR Detected for 4s).\r\n");
             *light_timer = 0; // 타이머 초기화
