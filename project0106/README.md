@@ -67,6 +67,16 @@ void SSR_Control(uint8_t pir_status, GPIO_PinState ssr_state, uint32_t *light_ti
  * @param timer 오류 타이머 변수
  * @param message 오류 메시지
  */
+typedef struct {
+    uint32_t error_timer_1;
+    uint32_t error_timer_2;
+} ErrorTimer;
+
+ErrorTimer error_timer = {0, 0};
+
+/**
+ * @brief 오류 감지 및 메시지 전송
+ */
 void Custom_Error_Handler(bool condition, uint32_t *timer, const char *message) {
     if (condition) {
         if (*timer == 0) *timer = HAL_GetTick();
@@ -82,21 +92,22 @@ void Custom_Error_Handler(bool condition, uint32_t *timer, const char *message) 
 /**
  * @brief 조명 제어 및 타이머 처리
  */
-void Control_Light(void) {
+void Control_Light(SensorData *data) {
     static uint32_t light_timer = 0;
-    static uint32_t error_timer = 0;
+    static uint32_t error_timer_1 = 0;
+    static uint32_t error_timer_2 = 0;
 
     GPIO_PinState ssr_state = HAL_GPIO_ReadPin(GPIOA, GPIO_PIN_10);
-    uint8_t pir_status = (pir_state == GPIO_PIN_SET) ? 1 : 0;
-    uint8_t cds_dark = (cds_analog_value <= CDS_LIGHT_THRESHOLD) ? 1 : 0;
+    uint8_t pir_status = (data->pir_state == GPIO_PIN_SET) ? 1 : 0;
+    uint8_t cds_dark = (data->cds_analog_value <= CDS_LIGHT_THRESHOLD) ? 1 : 0;
 
     /** SSR 제어 **/
     SSR_Control(pir_status, ssr_state, &light_timer);
 
     /** 오류 감지 **/
-    Custom_Error_Handler(pir_status && !cds_dark && ssr_state == GPIO_PIN_RESET, &error_timer,
+    Custom_Error_Handler(pir_status && !cds_dark && ssr_state == GPIO_PIN_RESET, &error_timer_1,
                    "[ERROR] PIR Detected, but Light is OFF (Bright Environment).");
-    Custom_Error_Handler(!pir_status && cds_dark && ssr_state == GPIO_PIN_SET, &error_timer,
+    Custom_Error_Handler(!pir_status && cds_dark && ssr_state == GPIO_PIN_SET, &error_timer_2,
                    "[ERROR] No PIR, but Light is ON (Dark Environment).");
 
     /** 상태 전송 **/
