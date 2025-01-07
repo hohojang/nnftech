@@ -1,4 +1,4 @@
-# 📋 Decision Table
+# Decision Table
 1. SSR 제어(SSR_Control)
    
 | 조건       | PIR 상태 |  SSR 상태  | 타이머    | 동작      |       설명          |
