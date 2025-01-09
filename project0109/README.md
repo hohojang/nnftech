@@ -10,7 +10,9 @@
 |      1     |     1       |cds_value < 500  |   O       |"Error: LED ON and CDS value too low" (LED 켜짐 + 조도가 너무 낮음)   |
 |     1      |     1       |cds_value > 3500 |   O       |"Error: LED ON and CDS value too high" (LED 켜짐 + 조도가 너무 밝음)  |
 |     0      |     0       |    정상         |    X      |"All OFF" (PIR 감지 없음 + LED 꺼짐 + 정상 범위)                      |
-
+### PIR 센서와 CDS 센서를 기반으로 주변 환경을 모니터링
+### LED 상태를 제어
+### 이상 상태(에러 조건)를 감지하여 LoRa 모듈을 통해 데이터를 전송
 송신부 CODE 
 ```C
 #include "main.h"
@@ -152,6 +154,8 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim) {
     }
 }
 ```
+## 수신부 -> 노트북
+### 디시전 테이블 
 | 메시지       | LED 상태  |  에러    | 동작       |  
 |------------|-----------|-----------|-----------|
 | "LED ON"   | 1  (ON)        |X      |     -      | LED가 켜졌음을 확인 후 로그 출력    |
@@ -160,6 +164,9 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim) {
 |"Error: CDS value too low"| - | O      |CDS 값이 너무 낮음을 에러로 처리 |
 |"Error: CDS value too high"|-| O   |CDS 값이 너무 높음을 에러로 처리 |
 |Unknown 메시지| - | - | 알 수 없는 메시지 로그 출력|
+### 송신부로부터 전송된 메시지 수신 
+### 수신된 데이터를 기반으로 현재 상태 분석 및 처리 
+### 수신된 메시지에 따라 로그를 출력하거나 특정 동작 수행 
 
 수신부 CODE
 ```C
