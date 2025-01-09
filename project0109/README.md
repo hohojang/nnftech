@@ -61,7 +61,6 @@ int main(void) {
         HAL_Delay(100); // CPU 사용량 감소를 위한 대기 시간
     }
 }
-
 /**
  * @brief PIR, CDS 센서 및 LED 상태를 처리
  *
@@ -88,7 +87,6 @@ void ProcessSensorsAndAct(void) {
 
     CheckErrorAndSend();
 }
-
 /**
  * @brief LED 상태를 제어
  *
@@ -102,7 +100,6 @@ void LED_Control(uint8_t state) {
         SendLoRaMessage(state ? "LED ON" : "LED OFF");
     }
 }
-
 /**
  * @brief 에러 조건을 확인하고 메시지를 전송
  *
@@ -131,7 +128,6 @@ void CheckErrorAndSend(void) {
         error_sent_led_stuck = error_sent_cds_low = error_sent_cds_high = 0;
     }
 }
-
 /**
  * @brief LoRa를 통해 메시지를 전송
  *
@@ -155,14 +151,7 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim) {
 
     }
 }
-
-void SystemClock_Config(void) {
-    RCC_OscInitTypeDef RCC_OscInitStruct = {0};
-    RCC_ClkInitTypeDef RCC_ClkInitStruct = {0};
-
-    HAL_PWREx_ControlVoltageScaling(PWR_REGULATOR_VOLTAGE_SCALE1);
-
-    RCC_OscInitStruct.OscillatorTy블
+```
 | 메시지       | LED 상태  |  에러    | 동작       |  
 |------------|-----------|-----------|-----------|
 | "LED ON"   | 1          |X      |     -      | LED가 켜졌음을 확인 후 로그 출력    |
@@ -251,40 +240,6 @@ void ProcessMessage(const char *message) {
 void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart) {
     if (huart->Instance == USART3) {
         message_ready = 1;
-    }
-}
-
-/**
- * @brief 시스템 클럭을 설정합니다.
- */
-void SystemClock_Config(void) {
-    RCC_OscInitTypeDef RCC_OscInitStruct = {0};
-    RCC_ClkInitTypeDef RCC_ClkInitStruct = {0};
-
-    HAL_PWREx_ControlVoltageScaling(PWR_REGULATOR_VOLTAGE_SCALE1);
-
-    RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_MSI;
-    RCC_OscInitStruct.MSIState = RCC_MSI_ON;
-    RCC_OscInitStruct.MSICalibrationValue = 0;
-    RCC_OscInitStruct.MSIClockRange = RCC_MSIRANGE_6;
-    RCC_OscInitStruct.PLL.PLLState = RCC_PLL_NONE;
-    HAL_RCC_OscConfig(&RCC_OscInitStruct);
-
-    RCC_ClkInitStruct.ClockType = RCC_CLOCKTYPE_HCLK | RCC_CLOCKTYPE_SYSCLK |
-                                  RCC_CLOCKTYPE_PCLK1 | RCC_CLOCKTYPE_PCLK2;
-    RCC_ClkInitStruct.SYSCLKSource = RCC_SYSCLKSOURCE_MSI;
-    RCC_ClkInitStruct.AHBCLKDivider = RCC_SYSCLK_DIV1;
-    RCC_ClkInitStruct.APB1CLKDivider = RCC_HCLK_DIV1;
-    RCC_ClkInitStruct.APB2CLKDivider = RCC_HCLK_DIV1;
-    HAL_RCC_ClockConfig(&RCC_ClkInitStruct, FLASH_LATENCY_0);
-}
-
-/**
- * @brief 에러 핸들러
- */
-void Error_Handler(void) {
-    while (1) {
-        // Stay here if an error occurs
     }
 }
 ```
