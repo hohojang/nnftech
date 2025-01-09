@@ -11,9 +11,9 @@
 ## 수신부 - > 노트북 
 | 메시지       | LED 상태  |  에러    | 동작       |  
 |------------|-----------|-----------|-----------|
-| "LED ON"   | 1          |OFF      |     -      | LED가 켜졌음을 확인 후 로그 출력    |
-|"LED OFF"    | 0         |  ON    | 타이머 시작 | LED가 꺼졌음을 확인 후 로그 출력|
-| "Error: LED stuck ON"| 미감지(0)| ON     | 4초 경과    | LED가 꺼지지 않음을 에러로 처리  |
-|"Error: CDS value too low"| - | 1      |CDS 값이 너무 낮음을 에러로 처리 |
-|"Error: CDS value too high"|-| 1   |CDS 값이 너무 높음을 에러로 처리 |
+| "LED ON"   | 1          |X      |     -      | LED가 켜졌음을 확인 후 로그 출력    |
+|"LED OFF"    | 0         | X    | 타이머 시작 | LED가 꺼졌음을 확인 후 로그 출력|
+| "Error: LED stuck ON"| 미감지(0)| O    | 4초 경과    | LED가 꺼지지 않음을 에러로 처리  |
+|"Error: CDS value too low"| - | O      |CDS 값이 너무 낮음을 에러로 처리 |
+|"Error: CDS value too high"|-| O   |CDS 값이 너무 높음을 에러로 처리 |
 |Unknown 메시지| - | - | 알 수 없는 메시지 로그 출력|
