@@ -133,10 +133,10 @@ void CheckErrorAndSend(void) {
 }
 
 /**
- * @brief LoRa를 통해 메시지를 전송합니다.
+ * @brief LoRa를 통해 메시지를 전송
  *
  * @param message 전송할 메시지 문자열
- * @details HAL UART API를 이용하여 문자열 메시지를 송신합니다.
+ * @details HAL UART API를 이용하여 문자열 메시지를 송신
  */
 void SendLoRaMessage(const char *message) {
     HAL_UART_Transmit(&huart3, (uint8_t *)message, strlen(message), HAL_MAX_DELAY);
@@ -162,33 +162,7 @@ void SystemClock_Config(void) {
 
     HAL_PWREx_ControlVoltageScaling(PWR_REGULATOR_VOLTAGE_SCALE1);
 
-    RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_MSI;
-    RCC_OscInitStruct.MSIState = RCC_MSI_ON;
-    RCC_OscInitStruct.MSICalibrationValue = 0;
-    RCC_OscInitStruct.MSIClockRange = RCC_MSIRANGE_6;
-    RCC_OscInitStruct.PLL.PLLState = RCC_PLL_NONE;
-    HAL_RCC_OscConfig(&RCC_OscInitStruct);
-
-    RCC_ClkInitStruct.ClockType = RCC_CLOCKTYPE_HCLK | RCC_CLOCKTYPE_SYSCLK |
-                                  RCC_CLOCKTYPE_PCLK1 | RCC_CLOCKTYPE_PCLK2;
-    RCC_ClkInitStruct.SYSCLKSource = RCC_SYSCLKSOURCE_MSI;
-    RCC_ClkInitStruct.AHBCLKDivider = RCC_SYSCLK_DIV1;
-    RCC_ClkInitStruct.APB1CLKDivider = RCC_HCLK_DIV1;
-    RCC_ClkInitStruct.APB2CLKDivider = RCC_HCLK_DIV1;
-    HAL_RCC_ClockConfig(&RCC_ClkInitStruct, FLASH_LATENCY_0);
-}
-
-void Error_Handler(void) {
-    while (1) {
-
-    }
-}
-```
-
-
-
-
-## 수신부 - > 노트북 
+    RCC_OscInitStruct.OscillatorTy블
 | 메시지       | LED 상태  |  에러    | 동작       |  
 |------------|-----------|-----------|-----------|
 | "LED ON"   | 1          |X      |     -      | LED가 켜졌음을 확인 후 로그 출력    |
