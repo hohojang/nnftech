@@ -14,6 +14,6 @@
 | "LED ON"       | 감지(1)  |OFF      |     -      | SSR ON    |
 |"LED OFF"        | 미감지(0) |  ON    | 타이머 시작 | 타이머 시작|
 | "Error: LED stuck ON"  | 미감지(0)| ON     | 4초 경과    | SSR OFF   |
-|"Error: CDS value too low"| - | 1 |     |CDS 값이 너무 낮음을 에러로 처리 |
-|"Error: CDS value too high"|-| 1  | |CDS 값이 너무 높음을 에러로 처리 |
+|"Error: CDS value too low"| - | 1      |CDS 값이 너무 낮음을 에러로 처리 |
+|"Error: CDS value too high"|-| 1   |CDS 값이 너무 높음을 에러로 처리 |
 |Unknown 메시지| - | - | 알 수 없는 메시지 로그 출력|
