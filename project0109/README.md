@@ -171,3 +171,120 @@ void SystemClock_Config(void) {
 |"Error: CDS value too low"| - | O      |CDS 값이 너무 낮음을 에러로 처리 |
 |"Error: CDS value too high"|-| O   |CDS 값이 너무 높음을 에러로 처리 |
 |Unknown 메시지| - | - | 알 수 없는 메시지 로그 출력|
+
+수신부 CODE
+```C
+#include "main.h"
+#include "usart.h"
+#include "gpio.h"
+#include <string.h>
+#include <stdio.h> // Include stdio.h for printf function
+
+// --- Constants ---
+#define RX_BUFFER_SIZE 128 /**< 수신 메시지 버퍼 크기 */
+
+// --- Global Variables ---
+uint8_t rx_buffer[RX_BUFFER_SIZE]; /**< 수신된 메시지를 저장하는 버퍼 */
+uint8_t message_ready = 0;         /**< 메시지 수신 완료 플래그 */
+
+// --- Function Prototypes ---
+/**
+ * @brief 수신된 메시지를 처리합니다.
+ *
+ * @param message 수신된 메시지 문자열
+ */
+void ProcessMessage(const char *message);
+
+/**
+ * @brief 시스템 클럭을 설정합니다.
+ */
+void SystemClock_Config(void);
+
+/**
+ * @brief 메인 함수: 시스템 초기화 및 메시지 처리 루프 실행
+ */
+int main(void) {
+    HAL_Init();
+    SystemClock_Config();
+    MX_GPIO_Init();
+    MX_USART3_UART_Init();
+
+    HAL_UART_Receive_IT(&huart3, rx_buffer, RX_BUFFER_SIZE);
+
+    while (1) {
+        if (message_ready) {
+            ProcessMessage((const char *)rx_buffer);
+            message_ready = 0;
+            HAL_UART_Receive_IT(&huart3, rx_buffer, RX_BUFFER_SIZE);
+        }
+
+        HAL_Delay(100); // CPU 사용량 감소를 위한 대기 시간
+    }
+}
+
+/**
+ * @brief 수신된 메시지를 처리합니다.
+ *
+ * @param message 수신된 메시지 문자열
+ * @details 메시지를 확인하고 동작에 따라 콘솔에 출력합니다.
+ */
+void ProcessMessage(const char *message) {
+    printf("Received message: %s\n", message);
+
+    if (strstr(message, "LED ON") != NULL) {
+        printf("Action: LED has been turned ON.\n");
+    } else if (strstr(message, "LED OFF") != NULL) {
+        printf("Action: LED has been turned OFF.\n");
+    } else if (strstr(message, "Error:") != NULL) {
+        printf("Action: Error detected - %s\n", message);
+    } else {
+        printf("Action: Unknown message received.\n");
+    }
+}
+
+/**
+ * @brief UART 수신 완료 콜백 함수
+ *
+ * @param huart UART 핸들러
+ * @details 메시지가 수신되면 플래그를 설정합니다.
+ */
+void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart) {
+    if (huart->Instance == USART3) {
+        message_ready = 1;
+    }
+}
+
+/**
+ * @brief 시스템 클럭을 설정합니다.
+ */
+void SystemClock_Config(void) {
+    RCC_OscInitTypeDef RCC_OscInitStruct = {0};
+    RCC_ClkInitTypeDef RCC_ClkInitStruct = {0};
+
+    HAL_PWREx_ControlVoltageScaling(PWR_REGULATOR_VOLTAGE_SCALE1);
+
+    RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_MSI;
+    RCC_OscInitStruct.MSIState = RCC_MSI_ON;
+    RCC_OscInitStruct.MSICalibrationValue = 0;
+    RCC_OscInitStruct.MSIClockRange = RCC_MSIRANGE_6;
+    RCC_OscInitStruct.PLL.PLLState = RCC_PLL_NONE;
+    HAL_RCC_OscConfig(&RCC_OscInitStruct);
+
+    RCC_ClkInitStruct.ClockType = RCC_CLOCKTYPE_HCLK | RCC_CLOCKTYPE_SYSCLK |
+                                  RCC_CLOCKTYPE_PCLK1 | RCC_CLOCKTYPE_PCLK2;
+    RCC_ClkInitStruct.SYSCLKSource = RCC_SYSCLKSOURCE_MSI;
+    RCC_ClkInitStruct.AHBCLKDivider = RCC_SYSCLK_DIV1;
+    RCC_ClkInitStruct.APB1CLKDivider = RCC_HCLK_DIV1;
+    RCC_ClkInitStruct.APB2CLKDivider = RCC_HCLK_DIV1;
+    HAL_RCC_ClockConfig(&RCC_ClkInitStruct, FLASH_LATENCY_0);
+}
+
+/**
+ * @brief 에러 핸들러
+ */
+void Error_Handler(void) {
+    while (1) {
+        // Stay here if an error occurs
+    }
+}
+```
