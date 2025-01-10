@@ -166,7 +166,14 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim) {
 ```
 ## 수신부 -> 노트북
 ### 디시전 테이블 
-
+|         조건                          |수신 데이터                        |   
+|---------------------------------------|----------------------------------|
+|    LED 상태 제어                       | "LED ON"                         |   
+|                                       | "LED OFF"                        |    
+|에러 수신: PIR + LED                   |"Error: PIR detected but LED OFF"  |       
+|에러 수신: CDS 낮음                    |"Error: CDS value too low"         |
+|에러 수신: CDS 높음                    |"Error: CDS value too high"        |
+|에러 수신: LED 안꺼짐                  |"Error: LED stuck ON"              |
 
 ## 수신부 역할 
 ### 송신부로부터 전송된 메시지 수신 
