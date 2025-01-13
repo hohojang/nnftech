@@ -1,4 +1,5 @@
 ### 진행 상태 [LoRa 보드 초기화 완료]
+[https://vimeo.com/1046327107?share=copy]
 PIR 센서: 움직임 감지
 
 CDS 센서: 주변 밝기 측정
