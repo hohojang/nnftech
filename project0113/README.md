@@ -145,3 +145,131 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim) {
  }
 }
 ```
+수신부
+```C
+#include "main.h"
+#include "usart.h"
+#include "gpio.h"
+#include <string.h>
+#include <stdio.h>
+
+// --- Constants ---
+#define RX_BUFFER_SIZE 128 /**< 수신 메시지 버퍼 크기 */
+
+// --- Global Variables ---
+uint8_t rx_buffer[RX_BUFFER_SIZE]; /**< 수신된 메시지를 저장하는 버퍼 */
+uint8_t message_ready = 0;         /**< 메시지 수신 완료 플래그 */
+
+// --- Function Prototypes ---
+void ProcessMessage(const char *message); /**< 수신된 메시지를 처리하는 함수 */
+void SystemClock_Config(void);           /**< 시스템 클럭을 설정하는 함수 */
+
+/**
+ * @brief 메인 함수
+ * @details 시스템 초기화 및 메시지 처리 루프를 실행
+ */
+int main(void) {
+    HAL_Init();
+    SystemClock_Config();
+    MX_GPIO_Init();
+    MX_USART3_UART_Init();
+
+    // UART 인터럽트를 통한 수신 시작
+    HAL_UART_Receive_IT(&huart3, rx_buffer, RX_BUFFER_SIZE);
+
+    while (1) {
+        if (message_ready) {
+            ProcessMessage((const char *)rx_buffer); // 수신된 메시지 처리
+            message_ready = 0; // 플래그 초기화
+            HAL_UART_Receive_IT(&huart3, rx_buffer, RX_BUFFER_SIZE); // 다시 수신 대기
+        }
+
+        HAL_Delay(100); // CPU 사용량 감소를 위한 대기 시간
+    }
+}
+
+/**
+ * @brief 수신된 메시지를 처리합니다.
+ * @param message 수신된 메시지 문자열
+ * @details 메시지를 분석하고 동작에 따라 디버깅 정보를 출력
+ */
+void ProcessMessage(const char *message) {
+    printf("Received message: %s\n", message); // 수신된 메시지 출력
+
+    if (strcmp(message, "LED ON") == 0) {
+        HAL_GPIO_WritePin(GPIOA, GPIO_PIN_8, GPIO_PIN_SET); // LED 켜기
+        printf("Action: LED has been turned ON.\n");
+    } else if (strcmp(message, "LED OFF") == 0) {
+        HAL_GPIO_WritePin(GPIOA, GPIO_PIN_8, GPIO_PIN_RESET); // LED 끄기
+        printf("Action: LED has been turned OFF.\n");
+    } else if (strstr(message, "Error:") != NULL) {
+        printf("Action: Error detected - %s\n", message); // 에러 메시지 처리
+    } else {
+        printf("Action: Unknown message received.\n"); // 알 수 없는 메시지 처리
+    }
+}
+
+/**
+ * @brief UART 수신 완료 콜백 함수
+ * @param huart UART 핸들러
+ * @details 메시지 수신 완료 시 플래그를 설정
+ */
+void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart) {
+    if (huart->Instance == USART3) { // USART3 사용
+        // 메시지 종료 문자('\n') 확인
+        if (strchr((const char *)rx_buffer, '\n') != NULL) {
+            message_ready = 1; // 메시지 수신 완료 플래그 설정
+        } else {
+            // 종료 문자가 없을 경우 다시 수신 대기
+            HAL_UART_Receive_IT(&huart3, rx_buffer, RX_BUFFER_SIZE);
+        }
+    }
+}
+
+/**
+ * @brief 시스템 클럭 설정
+ */
+void SystemClock_Config(void) {
+    RCC_OscInitTypeDef RCC_OscInitStruct = {0};
+    RCC_ClkInitTypeDef RCC_ClkInitStruct = {0};
+
+    if (HAL_PWREx_ControlVoltageScaling(PWR_REGULATOR_VOLTAGE_SCALE1) != HAL_OK) {
+        Error_Handler();
+    }
+
+    RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_MSI;
+    RCC_OscInitStruct.MSIState = RCC_MSI_ON;
+    RCC_OscInitStruct.MSICalibrationValue = 0;
+    RCC_OscInitStruct.MSIClockRange = RCC_MSIRANGE_6;
+    RCC_OscInitStruct.PLL.PLLState = RCC_PLL_NONE;
+    if (HAL_RCC_OscConfig(&RCC_OscInitStruct) != HAL_OK) {
+        Error_Handler();
+    }
+
+    RCC_ClkInitStruct.ClockType = RCC_CLOCKTYPE_HCLK|RCC_CLOCKTYPE_SYSCLK
+                                  |RCC_CLOCKTYPE_PCLK1|RCC_CLOCKTYPE_PCLK2;
+    RCC_ClkInitStruct.SYSCLKSource = RCC_SYSCLKSOURCE_MSI;
+    RCC_ClkInitStruct.AHBCLKDivider = RCC_SYSCLK_DIV1;
+    RCC_ClkInitStruct.APB1CLKDivider = RCC_HCLK_DIV1;
+    RCC_ClkInitStruct.APB2CLKDivider = RCC_HCLK_DIV1;
+
+    if (HAL_RCC_ClockConfig(&RCC_ClkInitStruct, FLASH_LATENCY_0) != HAL_OK) {
+        Error_Handler();
+    }
+}
+
+/**
+ * @brief 에러 처리 함수
+ */
+void Error_Handler(void) {
+    __disable_irq();
+    while (1) {
+    }
+}
+
+#ifdef USE_FULL_ASSERT
+void assert_failed(uint8_t *file, uint32_t line) {
+    printf("Wrong parameters value: file %s on line %d\n", file, line);
+}
+#endif
+```
