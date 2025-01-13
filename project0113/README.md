@@ -166,7 +166,7 @@ void SystemClock_Config(void);           /**< 시스템 클럭을 설정하는 �
 
 /**
  * @brief 메인 함수
- * @details 시스템 초기화 및 메시지 처리 루프를 실행
+ * @details 시스템 초기화 및 메시지 처리 루프 실행
  */
 int main(void) {
     HAL_Init();
@@ -189,23 +189,28 @@ int main(void) {
 }
 
 /**
- * @brief 수신된 메시지를 처리합니다.
+ * @brief 수신된 메시지를 처리
  * @param message 수신된 메시지 문자열
  * @details 메시지를 분석하고 동작에 따라 디버깅 정보를 출력
  */
 void ProcessMessage(const char *message) {
     printf("Received message: %s\n", message); // 수신된 메시지 출력
 
+    // LED 상태 메시지 처리
     if (strcmp(message, "LED ON") == 0) {
         HAL_GPIO_WritePin(GPIOA, GPIO_PIN_8, GPIO_PIN_SET); // LED 켜기
         printf("Action: LED has been turned ON.\n");
     } else if (strcmp(message, "LED OFF") == 0) {
         HAL_GPIO_WritePin(GPIOA, GPIO_PIN_8, GPIO_PIN_RESET); // LED 끄기
         printf("Action: LED has been turned OFF.\n");
+
+    // 에러 메시지 처리
     } else if (strstr(message, "Error:") != NULL) {
         printf("Action: Error detected - %s\n", message); // 에러 메시지 처리
+
+    // 알 수 없는 메시지 처리
     } else {
-        printf("Action: Unknown message received.\n"); // 알 수 없는 메시지 처리
+        printf("Action: Unknown message received.\n");
     }
 }
 
@@ -226,37 +231,6 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart) {
     }
 }
 
-/**
- * @brief 시스템 클럭 설정
- */
-void SystemClock_Config(void) {
-    RCC_OscInitTypeDef RCC_OscInitStruct = {0};
-    RCC_ClkInitTypeDef RCC_ClkInitStruct = {0};
-
-    if (HAL_PWREx_ControlVoltageScaling(PWR_REGULATOR_VOLTAGE_SCALE1) != HAL_OK) {
-        Error_Handler();
-    }
-
-    RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_MSI;
-    RCC_OscInitStruct.MSIState = RCC_MSI_ON;
-    RCC_OscInitStruct.MSICalibrationValue = 0;
-    RCC_OscInitStruct.MSIClockRange = RCC_MSIRANGE_6;
-    RCC_OscInitStruct.PLL.PLLState = RCC_PLL_NONE;
-    if (HAL_RCC_OscConfig(&RCC_OscInitStruct) != HAL_OK) {
-        Error_Handler();
-    }
-
-    RCC_ClkInitStruct.ClockType = RCC_CLOCKTYPE_HCLK|RCC_CLOCKTYPE_SYSCLK
-                                  |RCC_CLOCKTYPE_PCLK1|RCC_CLOCKTYPE_PCLK2;
-    RCC_ClkInitStruct.SYSCLKSource = RCC_SYSCLKSOURCE_MSI;
-    RCC_ClkInitStruct.AHBCLKDivider = RCC_SYSCLK_DIV1;
-    RCC_ClkInitStruct.APB1CLKDivider = RCC_HCLK_DIV1;
-    RCC_ClkInitStruct.APB2CLKDivider = RCC_HCLK_DIV1;
-
-    if (HAL_RCC_ClockConfig(&RCC_ClkInitStruct, FLASH_LATENCY_0) != HAL_OK) {
-        Error_Handler();
-    }
-}
 
 /**
  * @brief 에러 처리 함수
@@ -272,4 +246,5 @@ void assert_failed(uint8_t *file, uint32_t line) {
     printf("Wrong parameters value: file %s on line %d\n", file, line);
 }
 #endif
+
 ```
