@@ -30,7 +30,9 @@ LoRa 통신: 센서 데이터와 LED 상태, 에러 메시지를 송신부 → �
 메시지 처리: [테스트용]
 
 "LED ON": LED를 켬
+
 "LED OFF": LED를 끔
+
 "Error: ": 에러 메시지를 출력
 
 송신부
@@ -215,6 +217,7 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim) {
 
 ```
 수신부
+
 LoRa 핀 배치
 
 M0 → PB10 - > output 
@@ -222,6 +225,7 @@ M0 → PB10 - > output
 M1 → PB11 - > output 
 
 AUX → PA15  - > input
+
 ```C
 #include "main.h"
 #include "usart.h"
