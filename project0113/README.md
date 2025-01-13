@@ -35,11 +35,11 @@ LoRa 통신: 센서 데이터와 LED 상태, 에러 메시지를 송신부 → �
 송신부
 LoRa 핀 배치
 
-M0 → PB10
+M0 → PB10 - > output 
 
-M1 → PB11
+M1 → PB11 - > output 
 
-AUX → PA15 
+AUX → PA15  - > input
 ```C
 #include "main.h"
 #include "adc.h"
