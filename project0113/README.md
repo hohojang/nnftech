@@ -48,7 +48,7 @@ AUX → PA15  - > input
 #include "usart.h"
 #include "gpio.h"
 #include <string.h>
-#include <stdio.h> 
+#include <stdio.h> // Include stdio.h for printf function
 
 // --- Constants ---
 #define CDS_THRESHOLD_LOW 500   /**< CDS 센서 낮은 밝기 임계값 */
@@ -58,7 +58,6 @@ AUX → PA15  - > input
 // --- Global Variables ---
 uint8_t pir_detected = 0; /**< PIR 센서 감지 상태 */
 uint8_t led_status = 0;   /**< 현재 LED 상태 (1: 켜짐, 0: 꺼짐) */
-uint8_t last_led_status = 0; /**< 이전 LED 상태 (1: 켜짐, 0: 꺼짐) */
 uint8_t error_sent_led_stuck = 0; /**< LED 고장 에러 전송 플래그 */
 uint8_t error_sent_cds_low = 0;   /**< CDS 낮은 값 에러 전송 플래그 */
 uint8_t error_sent_cds_high = 0;  /**< CDS 높은 값 에러 전송 플래그 */
@@ -66,13 +65,14 @@ uint32_t cds_value = 0; /**< CDS 센서 측정값 */
 uint32_t last_led_on_time = 0; /**< LED가 마지막으로 켜진 시간 기록 */
 
 // --- Function Prototypes ---
-
 void LED_Control(uint8_t state);
 void CheckErrorAndSend(void);
 void SendLoRaMessage(const char *message);
 void SystemClock_Config(void);
 void ProcessSensorsAndAct(void);
-
+void LoRa_Init(void);
+void LoRa_EnterConfigMode(void);
+void LoRa_WaitForAUX(void);
 
 int main(void) {
     HAL_Init();
@@ -82,6 +82,8 @@ int main(void) {
     MX_ADC1_Init();
     MX_TIM2_Init();
 
+    LoRa_Init(); // LoRa 초기화
+
     HAL_TIM_Base_Start_IT(&htim2);
 
     while (1) {
@@ -89,6 +91,7 @@ int main(void) {
         HAL_Delay(100); // CPU 사용량 감소를 위한 대기 시간
     }
 }
+
 /**
  * @brief PIR, CDS 센서 및 LED 상태를 처리
  *
@@ -102,7 +105,6 @@ void ProcessSensorsAndAct(void) {
     if (pir_detected) {
         LED_Control(1);
         last_led_on_time = HAL_GetTick();
-
     } else if (led_status == 1 && (HAL_GetTick() - last_led_on_time >= LED_OFF_DELAY)) {
         LED_Control(0);
     }
@@ -115,6 +117,7 @@ void ProcessSensorsAndAct(void) {
 
     CheckErrorAndSend();
 }
+
 /**
  * @brief LED 상태를 제어
  *
@@ -128,6 +131,7 @@ void LED_Control(uint8_t state) {
         SendLoRaMessage(state ? "LED ON" : "LED OFF");
     }
 }
+
 /**
  * @brief 에러 조건을 확인하고 메시지를 전송
  *
@@ -160,11 +164,38 @@ void CheckErrorAndSend(void) {
         error_sent_cds_high = 0;
     }
 }
+
 /**
- * @brief LoRa를 통해 메시지를 전송
- *
- * @param message 전송할 메시지 문자열
- * @details HAL UART API를 이용하여 문자열 메시지를 송신
+ * @brief LoRa 모듈 초기화
+ */
+void LoRa_Init(void) {
+    // M0 = 0, M1 = 0 (Normal Mode)
+    HAL_GPIO_WritePin(GPIOB, GPIO_PIN_10, GPIO_PIN_RESET);
+    HAL_GPIO_WritePin(GPIOB, GPIO_PIN_11, GPIO_PIN_RESET);
+    HAL_Delay(10);
+}
+
+/**
+ * @brief LoRa 모듈 설정 모드로 전환
+ */
+void LoRa_EnterConfigMode(void) {
+    // M0 = 1, M1 = 1 (Configuration Mode)
+    HAL_GPIO_WritePin(GPIOB, GPIO_PIN_10, GPIO_PIN_SET);
+    HAL_GPIO_WritePin(GPIOB, GPIO_PIN_11, GPIO_PIN_SET);
+    HAL_Delay(100);
+}
+
+/**
+ * @brief LoRa AUX 핀 대기
+ */
+void LoRa_WaitForAUX(void) {
+    while (HAL_GPIO_ReadPin(GPIOA, GPIO_PIN_15) == GPIO_PIN_RESET) {
+        HAL_Delay(1);
+    }
+}
+
+/**
+ * @brief LoRa 메시지 전송
  */
 void SendLoRaMessage(const char *message) {
     HAL_UART_Transmit(&huart3, (uint8_t *)message, strlen(message), HAL_MAX_DELAY);
@@ -174,19 +205,22 @@ void SendLoRaMessage(const char *message) {
 
 /**
  * @brief 타이머 인터럽트 콜백 함수
- *
- * @param htim 타이머 핸들러
- * @details 타이머 주기 작업이 필요하면 구현
  */
 void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim) {
     if (htim->Instance == TIM2) {
-
+        // 타이머 주기 작업
     }
-  }
- }
 }
+
 ```
 수신부
+LoRa 핀 배치
+
+M0 → PB10 - > output 
+
+M1 → PB11 - > output 
+
+AUX → PA15  - > input
 ```C
 #include "main.h"
 #include "usart.h"
@@ -237,19 +271,12 @@ int main(void) {
 void ProcessMessage(const char *message) {
     printf("Received message: %s\n", message); // 수신된 메시지 출력
 
-    // LED 상태 메시지 처리
     if (strcmp(message, "LED ON") == 0) {
-        HAL_GPIO_WritePin(GPIOA, GPIO_PIN_8, GPIO_PIN_SET); // LED 켜기
         printf("Action: LED has been turned ON.\n");
     } else if (strcmp(message, "LED OFF") == 0) {
-        HAL_GPIO_WritePin(GPIOA, GPIO_PIN_8, GPIO_PIN_RESET); // LED 끄기
         printf("Action: LED has been turned OFF.\n");
-
-    // 에러 메시지 처리
     } else if (strstr(message, "Error:") != NULL) {
         printf("Action: Error detected - %s\n", message); // 에러 메시지 처리
-
-    // 알 수 없는 메시지 처리
     } else {
         printf("Action: Unknown message received.\n");
     }
@@ -262,30 +289,7 @@ void ProcessMessage(const char *message) {
  */
 void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart) {
     if (huart->Instance == USART3) { // USART3 사용
-        // 메시지 종료 문자('\n') 확인
-        if (strchr((const char *)rx_buffer, '\n') != NULL) {
-            message_ready = 1; // 메시지 수신 완료 플래그 설정
-        } else {
-            // 종료 문자가 없을 경우 다시 수신 대기
-            HAL_UART_Receive_IT(&huart3, rx_buffer, RX_BUFFER_SIZE);
-        }
+        message_ready = 1; // 메시지 수신 완료 플래그 설정
     }
 }
-
-
-/**
- * @brief 에러 처리 함수
- */
-void Error_Handler(void) {
-    __disable_irq();
-    while (1) {
-    }
-}
-
-#ifdef USE_FULL_ASSERT
-void assert_failed(uint8_t *file, uint32_t line) {
-    printf("Wrong parameters value: file %s on line %d\n", file, line);
-}
-#endif
-
 ```
