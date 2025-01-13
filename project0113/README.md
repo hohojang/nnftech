@@ -1,4 +1,5 @@
 ### 진행 상태 [LoRa 보드 초기화 완료 / 통신 x]
+### 초기화 코드 첨부 main.c
 [https://vimeo.com/1046327107?share=copy]
 
 PIR 센서: 움직임 감지
