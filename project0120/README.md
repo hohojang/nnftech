@@ -1,3 +1,25 @@
+# 현재 상태 
+M0, M1 핀이 모두 GND로 연결되어 Normal Mode 상태 
+
+MCU: STM32L452RET6
+
+LoRa 모듈: E22-900T-22S
+
+UART 사용: 송신부와 수신부 모두 USART1을 통해 통신
+
+# 문제점 
+UART 테스트에서 출력 없음
+
+UART 송신부에서 "Hello" 메시지를 전송하도록 작성했지만, 출력이 보이지 않음.
+
+UART 수신부 코드로도 데이터가 감지되지 않음.
+
+LoRa를 통한 송수신 동작 미확인
+
+UART 자체 통신이 동작하지 않아 LoRa를 통한 메시지 전달 여부 확인 불가.
+
+# 점검한 사항 
+
 # 송신부 RF_Setting 
 Baud Rate: 9600 bps
 
