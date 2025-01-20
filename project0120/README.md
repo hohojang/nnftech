@@ -1,4 +1,4 @@
-##송신부 RF_Setting 
+## 송신부 RF_Setting 
 
 ## Baud Rate: 9600 bps
 ## Parity: 8N1 (No Parity)
