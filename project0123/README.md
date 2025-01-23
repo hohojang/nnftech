@@ -16,5 +16,5 @@ UART 상태: HAL_TIMEOUT, 데이터 수신 실패(rx_complete = 0).
 |Baud Rate |	9600	|9600	| 일치 |
 |Parity    |	None  |	None|	일치 |
 |Stop Bits |	1	    |  1  |	일치 |
-Word Length	8 bits	8 bits	일치
-Flow Control	None	None	일치
+|Word Length|	8 bits|	8 bits|	일치|
+|Flow Control|	None|None	| 일치|
