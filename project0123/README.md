@@ -18,3 +18,11 @@ UART 상태: HAL_TIMEOUT, 데이터 수신 실패(rx_complete = 0).
 |Stop Bits |	1	    |  1  |	일치 |
 |Word Length|	8 bits|	8 bits|	일치|
 |Flow Control|	None|None	| 일치|
+
+# GPIO 설정 
+|핀 이름 |	송신부    |	수신부    |	상태               | 
+|--------|-----------|-----------|-------------------------|
+|M0      |GPIOA_PIN_9|	GPIOA_PIN_9|	일치                   |
+|M1	     |GPIOB_PIN_1|	GPIOB_PIN_1|	 일치                  |
+|TX(UART)|	UART4_TX(GPIOC10)|UART4_TX (GPIOC10)|	일치|
+|RX (UART)	|UART4_RX (GPIOC11)	|UART4_RX (GPIOC11)	|일치|
