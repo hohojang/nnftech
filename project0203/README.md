@@ -42,3 +42,24 @@ SendATCommand("AT+CH=0x02");      // 채널 설정
 SendATCommand("AT+BAUD=9600");    // UART 속도 설정
 SendATCommand("AT+PARAMETER=4,7,1,1");  // 전송 파라미터 설정
 ```
+# 디버깅 방법
+Live Expression 설정: 디버깅 시 아래의 변수들을 Live Expression에서 모니터링
+
+rx_buffer (수신 버퍼)
+
+received_message (수신된 메시지)
+
+message_ready (수신 완료 플래그)
+
+메시지 전송 확인:
+
+송신부의 HAL_UART_Transmit() 함수가 HAL_OK를 반환하는지 확인
+
+수신부에서는 DMA를 통해 HAL_UART_RxCpltCallback()이 호출되고, message_ready 플래그가 활성화되는지 확인
+
+# 문제 해결 시도 
+
+|------|--------|-----------------|
+----------------------------------
+
+
