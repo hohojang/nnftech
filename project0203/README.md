@@ -154,7 +154,7 @@ void SendATCommand(const char *command, char *response, uint16_t response_size) 
 
 /**
  * @brief PIR 및 CDS 센서 값을 읽는 함수
- * @details PIR 센서의 디지털 입력 값을 읽고 CDS 센서의 아날로그 값을 변환하여 저장합니다.
+ * @details PIR 센서의 디지털 입력 값을 읽고 CDS 센서의 아날로그 값을 변환하여 저장
  */
 void ReadSensors(void) {
     pir_detected = HAL_GPIO_ReadPin(GPIOC, GPIO_PIN_6);  // PIR 센서 상태 읽기
@@ -168,7 +168,7 @@ void ReadSensors(void) {
 
 /**
  * @brief PIR 감지 상태에 따라 LED를 제어하고 상태 메시지를 전송하는 함수
- * @details PIR이 감지되면 LED를 켜고 일정 시간 후 자동으로 끕니다.
+ * @details PIR이 감지되면 LED를 켜고 일정 시간 후 자동으로 off
  */
 void ControlLED(void) {
     if (pir_detected) {
