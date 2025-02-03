@@ -232,5 +232,180 @@ void SystemClock_Config(void) {
     }
 }
 ```
+# 수신부 코드 
+```c
+#include "main.h"
+#include "usart.h"
+#include "gpio.h"
+#include <string.h>
+#include <stdio.h>
 
+// --- 전역 변수 ---
+uint8_t rx_buffer[64];       /**< UART 수신 버퍼 */
+uint8_t message_ready = 0;    /**< 메시지 수신 플래그 */
+
+// --- LoRa 설정 상수 ---
+#define LORA_ADDRESS 0x01      /**< LoRa 모듈의 주소 */
+#define LORA_CHANNEL 0x04      /**< LoRa 모듈의 통신 채널 */
+#define LORA_BAUDRATE 9600     /**< LoRa 모듈의 UART 통신 속도 */
+
+// --- 함수 프로토타입 ---
+void SystemClock_Config(void);
+void ConfigureLoRa(void);
+void SendATCommand(const char *command, char *response, uint16_t response_size);
+void ProcessReceivedMessage(void);
+
+/**
+ * @brief 메인 함수
+ * @details LoRa 수신부 초기화 후 DMA를 통해 지속적으로 메시지를 수신
+ */
+int main(void) {
+    HAL_Init();
+    SystemClock_Config();
+    MX_GPIO_Init();
+    MX_UART4_Init();  // LoRa 모듈 수신 UART4 초기화
+
+    // LoRa 설정
+    ConfigureLoRa();
+
+    // DMA를 통한 UART 수신 시작
+    HAL_UART_Receive_DMA(&huart4, rx_buffer, sizeof(rx_buffer));
+
+    printf("LoRa 수신부 시작\n");
+
+    while (1) {
+        if (message_ready) {
+            message_ready = 0;  // 플래그 리셋
+            ProcessReceivedMessage();  // 수신된 메시지 처리
+        }
+        HAL_Delay(100);
+    }
+}
+
+/**
+ * @brief LoRa 모듈 초기 설정 함수
+ * @details LoRa 모듈의 주소, 채널, 통신 속도를 설정하고 Normal Mode로 전환
+ */
+void ConfigureLoRa(void) {
+    char command[32];
+    char response[64] = {0};
+
+    // --- M0 = 1, M1 = 1 (Configuration Mode) ---
+    HAL_GPIO_WritePin(GPIOB, GPIO_PIN_10, GPIO_PIN_SET);
+    HAL_GPIO_WritePin(GPIOB, GPIO_PIN_11, GPIO_PIN_SET);
+    HAL_Delay(100);
+
+    // --- LoRa 설정 ---
+    snprintf(command, sizeof(command), "AT+ADDR=%02X", LORA_ADDRESS);
+    SendATCommand(command, response, sizeof(response));
+
+    snprintf(command, sizeof(command), "AT+CH=%02X", LORA_CHANNEL);
+    SendATCommand(command, response, sizeof(response));
+
+    snprintf(command, sizeof(command), "AT+BAUD=%d", LORA_BAUDRATE);
+    SendATCommand(command, response, sizeof(response));
+
+    SendATCommand("AT+SAVE", response, sizeof(response));
+
+    // --- M0 = 0, M1 = 0 (Normal Mode) ---
+    HAL_GPIO_WritePin(GPIOB, GPIO_PIN_10, GPIO_PIN_RESET);
+    HAL_GPIO_WritePin(GPIOB, GPIO_PIN_11, GPIO_PIN_RESET);
+    HAL_Delay(100);
+}
+
+/**
+ * @brief AT 명령어를 LoRa 모듈에 전송하고 응답을 받는 함수
+ * 
+ * @param command AT 명령어 문자열
+ * @param response LoRa 모듈로부터의 응답을 저장할 버퍼
+ * @param response_size 응답 버퍼의 크기
+ */
+void SendATCommand(const char *command, char *response, uint16_t response_size) {
+    HAL_UART_Transmit(&huart4, (uint8_t *)command, strlen(command), HAL_MAX_DELAY);
+    HAL_UART_Transmit(&huart4, (uint8_t *)"\r\n", 2, HAL_MAX_DELAY);
+    HAL_UART_Receive(&huart4, (uint8_t *)response, response_size, 2000);
+    printf("AT 명령어 응답: %s\n", response);
+}
+
+/**
+ * @brief UART 수신 완료 콜백 함수
+ * @details DMA를 이용하여 UART 수신이 완료되었을 때 호출
+ * @param huart UART 핸들러 포인터
+ */
+void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart) {
+    if (huart->Instance == UART4) {
+        message_ready = 1;  // 수신 완료 플래그 설정
+        HAL_UART_Receive_DMA(&huart4, rx_buffer, sizeof(rx_buffer));  // DMA 수신 재시작
+    }
+}
+
+/**
+ * @brief 수신된 LoRa 메시지를 처리하는 함수
+ * @details 메시지의 내용을 분석하고 적절한 로그를 출력
+ */
+void ProcessReceivedMessage(void) {
+    printf("수신된 메시지: %s\n", rx_buffer);
+
+    if (strstr((char *)rx_buffer, "PIR detected") != NULL) {
+        printf("PIR 감지 메시지 수신: %s\n", rx_buffer);
+    }
+    else if (strstr((char *)rx_buffer, "CDS value too low") != NULL) {
+        printf("에러: CDS 값이 너무 낮음\n");
+    }
+    else if (strstr((char *)rx_buffer, "CDS value too high") != NULL) {
+        printf("에러: CDS 값이 너무 높음\n");
+    }
+    else if (strstr((char *)rx_buffer, "LED OFF after timeout") != NULL) {
+        printf("LED가 타임아웃으로 꺼짐: %s\n", rx_buffer);
+    }
+    else {
+        printf("알 수 없는 메시지: %s\n", rx_buffer);
+    }
+
+    memset(rx_buffer, 0x00, sizeof(rx_buffer));  // 수신 버퍼 초기화
+}
+
+/**
+ * @brief 시스템 클럭 설정 함수
+ * @details 시스템의 기본 클럭 및 전압 설정을 초기화
+ */
+void SystemClock_Config(void) {
+    RCC_OscInitTypeDef RCC_OscInitStruct = {0};
+    RCC_ClkInitTypeDef RCC_ClkInitStruct = {0};
+
+    if (HAL_PWREx_ControlVoltageScaling(PWR_REGULATOR_VOLTAGE_SCALE1) != HAL_OK) {
+        Error_Handler();
+    }
+
+    RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_MSI;
+    RCC_OscInitStruct.MSIState = RCC_MSI_ON;
+    RCC_OscInitStruct.MSICalibrationValue = 0;
+    RCC_OscInitStruct.MSIClockRange = RCC_MSIRANGE_6;
+    RCC_OscInitStruct.PLL.PLLState = RCC_PLL_NONE;
+    if (HAL_RCC_OscConfig(&RCC_OscInitStruct) != HAL_OK) {
+        Error_Handler();
+    }
+
+    RCC_ClkInitStruct.ClockType = RCC_CLOCKTYPE_HCLK | RCC_CLOCKTYPE_SYSCLK |
+                                  RCC_CLOCKTYPE_PCLK1 | RCC_CLOCKTYPE_PCLK2;
+    RCC_ClkInitStruct.SYSCLKSource = RCC_SYSCLKSOURCE_MSI;
+    RCC_ClkInitStruct.AHBCLKDivider = RCC_SYSCLK_DIV1;
+    RCC_ClkInitStruct.APB1CLKDivider = RCC_HCLK_DIV1;
+    RCC_ClkInitStruct.APB2CLKDivider = RCC_HCLK_DIV1;
+
+    if (HAL_RCC_ClockConfig(&RCC_ClkInitStruct, FLASH_LATENCY_0) != HAL_OK) {
+        Error_Handler();
+    }
+}
+
+/**
+ * @brief 오류 발생 시 호출되는 함수
+ * @details 시스템 오류가 발생하면 무한 루프에 진입하여 시스템 STOP
+ */
+void Error_Handler(void) {
+    __disable_irq();
+    while (1) {
+    }
+}
+```
 
