@@ -1,7 +1,7 @@
 # 하드웨어 구성
 보드 및 주요 연결
 
-MCU: STM32L452RET6 (LQFP64 패키지)
+MCU: STM32L452RET6 
 
 LoRa 모듈: EBYTE E22 (UART 통신)
 
