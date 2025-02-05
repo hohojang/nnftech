@@ -1,15 +1,12 @@
-//송신부
+//수신부
 #include "main.h"
-#include "gpio.h"
-#include "adc.h"
 #include "usart.h"
+#include "gpio.h"
 #include <string.h>
 #include <stdio.h>
 
 // --- 패킷 구조 ---
 #define HEADER 0xAA  // 패킷 헤더
-#define DEST_ADDRESS 0x02  // 수신부 주소
-#define SRC_ADDRESS 0x01  // 송신부 주소
 #define MAX_DATA_SIZE 64  // 최대 데이터 크기
 
 typedef struct {
@@ -22,122 +19,89 @@ typedef struct {
 } LoRaPacket;
 
 // --- 전역 변수 ---
-uint8_t pir_detected = 0;
-uint8_t led_status = 0;
-uint32_t cds_value = 0;
-uint32_t last_led_on_time = 0;
-volatile uint8_t dma_tx_complete = 1;  // DMA 송신 완료 플래그
-
-#define LED_OFF_DELAY 5000  /**< LED가 OFF되기 전 대기 시간 (5초) */
-#define CDS_LOW_THRESHOLD 400  /**< CDS 값이 낮다고 판단할 임계값 */
-#define CDS_HIGH_THRESHOLD 2800  /**< CDS 값이 높다고 판단할 임계값 */
+volatile uint8_t rx_buffer[sizeof(LoRaPacket)];  // DMA 수신 버퍼
+volatile uint8_t message_ready = 0;  // 수신 완료 플래그
 
 // --- 함수 선언 ---
 void SystemClock_Config(void);
-void ReadSensors(void);
-void ControlLED(void);
-void SendLoRaPacket(const char *message);
-uint8_t CalculateChecksum(const LoRaPacket *packet);
+void ProcessReceivedPacket(void);
+uint8_t ValidateChecksum(const LoRaPacket *packet);
 
 // --- 메인 함수 ---
 int main(void) {
     HAL_Init();
     SystemClock_Config();
     MX_GPIO_Init();
-    MX_ADC1_Init();
     MX_UART4_Init();
 
+    // DMA를 통한 UART 수신 시작 (형 변환 적용)
+    HAL_UART_Receive_DMA(&huart4, (uint8_t *)(rx_buffer), sizeof(LoRaPacket));
+    printf("LoRa 수신부 시작\n");
+
     while (1) {
-        ReadSensors();  // 센서 값 읽기
-        ControlLED();   // LED 상태 제어 및 패킷 전송
-        HAL_Delay(100);
-    }
-}
-
-/**
- * @brief PIR 및 CDS 센서 값을 읽는 함수
- */
-void ReadSensors(void) {
-    // PIR 센서 감지 상태 읽기
-    pir_detected = HAL_GPIO_ReadPin(GPIOC, GPIO_PIN_6);
-
-    // CDS 센서 아날로그 값 읽기
-    HAL_ADC_Start(&hadc1);
-    if (HAL_ADC_PollForConversion(&hadc1, HAL_MAX_DELAY) == HAL_OK) {
-        cds_value = HAL_ADC_GetValue(&hadc1);
-    }
-    HAL_ADC_Stop(&hadc1);
-
-    printf("PIR: %d, CDS: %lu\n", pir_detected, cds_value);
-}
-
-/**
- * @brief PIR 감지 상태에 따라 LED를 제어하고 LoRa 패킷을 전송하는 함수
- */
-void ControlLED(void) {
-    if (pir_detected) {
-        if (!led_status) {
-            HAL_GPIO_WritePin(GPIOA, GPIO_PIN_8, GPIO_PIN_SET);  // LED 켜기
-            led_status = 1;
-            last_led_on_time = HAL_GetTick();
-            SendLoRaPacket("PIR detected: LED ON");
+        if (message_ready) {
+            message_ready = 0;  // 플래그 리셋
+            ProcessReceivedPacket();  // 수신된 패킷 처리
         }
-    } else if (led_status && (HAL_GetTick() - last_led_on_time >= LED_OFF_DELAY)) {
-        HAL_GPIO_WritePin(GPIOA, GPIO_PIN_8, GPIO_PIN_RESET);  // LED 끄기
-        led_status = 0;
-        SendLoRaPacket("LED OFF after timeout");
-    }
-
-    // CDS 값에 따른 에러 메시지 전송
-    if (cds_value < CDS_LOW_THRESHOLD) {
-        SendLoRaPacket("Error: CDS value too low");
-    } else if (cds_value > CDS_HIGH_THRESHOLD) {
-        SendLoRaPacket("Error: CDS value too high");
     }
 }
 
 /**
- * @brief LoRa 패킷을 전송하는 함수
+ * @brief DMA 수신 완료 콜백 함수
  */
-void SendLoRaPacket(const char *message) {
-    LoRaPacket packet;
-    packet.header = HEADER;
-    packet.src_address = SRC_ADDRESS;
-    packet.dest_address = DEST_ADDRESS;
-    packet.data_length = strlen(message);
-    strncpy(packet.data, message, MAX_DATA_SIZE);
-    packet.checksum = CalculateChecksum(&packet);
-
-    if (dma_tx_complete) {
-        dma_tx_complete = 0;
-        HAL_UART_Transmit_DMA(&huart4, (uint8_t *)&packet, sizeof(LoRaPacket));
-        printf("패킷 전송: %s\n", message);
-    }
-}
-
-/**
- * @brief LoRa 패킷의 체크섬을 계산하는 함수
- */
-uint8_t CalculateChecksum(const LoRaPacket *packet) {
-    uint8_t sum = 0;
-    sum += packet->header;
-    sum += packet->src_address;
-    sum += packet->dest_address;
-    sum += packet->data_length;
-    for (int i = 0; i < packet->data_length; i++) {
-        sum += packet->data[i];
-    }
-    return sum;
-}
-
-/**
- * @brief UART DMA 송신 완료 콜백 함수
- */
-void HAL_UART_TxCpltCallback(UART_HandleTypeDef *huart) {
+void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart) {
     if (huart->Instance == UART4) {
-        dma_tx_complete = 1;
-        printf("패킷 송신 완료\n");
+        message_ready = 1;  // 수신 완료 플래그 설정
+        HAL_UART_Receive_DMA(&huart4, (uint8_t *)(rx_buffer), sizeof(LoRaPacket));  // 다음 수신 시작
     }
+}
+
+/**
+ * @brief 수신된 패킷을 처리하는 함수
+ */
+void ProcessReceivedPacket(void) {
+    LoRaPacket *packet = (LoRaPacket *)rx_buffer;
+
+    // 패킷 헤더 및 체크섬 검증
+    if (packet->header != HEADER) {
+        printf("잘못된 패킷 헤더: %02X\n", packet->header);
+        return;
+    }
+    if (!ValidateChecksum(packet)) {
+        printf("체크섬 오류: 패킷 무시됨\n");
+        return;
+    }
+
+    // 유효한 메시지 출력
+    printf("수신된 메시지: %s\n", packet->data);
+
+    // 특정 메시지에 따른 동작 추가 가능
+    if (strstr(packet->data, "PIR detected") != NULL) {
+        printf("PIR 감지 메시지 처리\n");
+    } else if (strstr(packet->data, "Error: CDS value too low") != NULL) {
+        printf("CDS 값이 너무 낮음 - 경고 처리\n");
+    } else if (strstr(packet->data, "Error: CDS value too high") != NULL) {
+        printf("CDS 값이 너무 높음 - 경고 처리\n");
+    } else if (strstr(packet->data, "LED OFF after timeout") != NULL) {
+        printf("LED가 꺼졌음\n");
+    } else {
+        printf("알 수 없는 메시지\n");
+    }
+}
+
+/**
+ * @brief 패킷의 체크섬을 검증하는 함수
+ */
+uint8_t ValidateChecksum(const LoRaPacket *packet) {
+    uint8_t calculated_checksum = 0;
+    calculated_checksum += packet->header;
+    calculated_checksum += packet->src_address;
+    calculated_checksum += packet->dest_address;
+    calculated_checksum += packet->data_length;
+    for (int i = 0; i < packet->data_length; i++) {
+        calculated_checksum += packet->data[i];
+    }
+    return (calculated_checksum == packet->checksum);
 }
 
 /**
