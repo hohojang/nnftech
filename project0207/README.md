@@ -1,4 +1,7 @@
 ## 송신부 
+BaudRate : 9600 bps 
+Channel  : 채널 4 
+Address  : 주소 1 
 ```c
 /**
  * @file main.c
