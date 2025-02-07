@@ -212,6 +212,11 @@ void Error_Handler(void) {
 
 
 ## 수신부 
+BaudRate : 9600 bps 
+
+Channel  : 채널 4 
+
+Address  : 주소 2 
 ```c
 /**
  * @file main.c
