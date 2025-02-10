@@ -3,6 +3,7 @@ LoRa 통신 영상 [https://vimeo.com/1055144879?share=copy#t=0]
 # LoRa 통신 (USB to TTL + EBYTE E220-900T22D)
 
 **USB to TTL 변환기와 EBYTE E220-900T22D LoRa 모듈**을 사용하여 무선 통신을 성공적으로 구현
+
 송신부에서 **HEX 데이터를 전송**하고, 수신부에서 이를 정상적으로 수신하는 과정
 
 ---
