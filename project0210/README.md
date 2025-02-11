@@ -39,14 +39,14 @@ LoRa 통신 영상 [https://vimeo.com/1055144879?share=copy#t=0]
 
 #### **송신부 설정**
 - **Baud Rate:** 9600 bps  
-- **Channel:** 68  
+- **Channel:** 4 
 - **Address:** 1  
 - **Air Rate:** 0.3 kbps  
 
 
 #### **수신부 설정**
 - **Baud Rate:** 9600 bps  
-- **Channel:** 68  
+- **Channel:** 4  
 - **Address:** 2  
 - **Air Rate:** 0.3 kbps  
 ---
@@ -83,7 +83,7 @@ LoRa 통신 영상 [https://vimeo.com/1055144879?share=copy#t=0]
 
 ---
 
-## 🔧 **문제 해결 과정**
+##  **문제 해결 과정**
 - 초기 설정에서 LoRa 모듈의 RF 설정이 제대로 저장되지 않는 문제와 LoRa 송수신이 되지 않는 문제가 발생하였지만 RF 설정 후 LoRa 모듈 전원을 재부팅하여 해결
 - M0, M1 핀을 GND / GND로 설정하고(0 , 0) , 송신부에서 데이터 형식을 HEX 값으로 변환하여 **통신 성공**을 확인
 
