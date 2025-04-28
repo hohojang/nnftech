@@ -139,6 +139,22 @@ int main(void)
     // 모든 조건식이 거짓 일 때 실행될 명령문
   }
   ```
+- switch 문
+  가능한 실행 경로가 여러 개인 경우에는 switch 문을 사용하는것이 좋음.
+```c
+switch(변수)
+{
+  case c1;
+        처리1;
+        break;
+  case c2;
+        처리2;
+        break;
+  case c3;
+        처리3;
+        break;
+}
+```
     
   
 
